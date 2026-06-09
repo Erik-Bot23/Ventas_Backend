@@ -62,7 +62,8 @@ public class UserImpl implements UserService {
 
         user.setRole(Role.valueOf(request.getRole().toUpperCase()));
 
-        user.setActive(request.isActive());
+        //Quitar esta línea para evitar el false en active al actualizar
+        //user.setActive(request.isActive());
 
         UserEntity updated = repository.save(user);
 
@@ -75,6 +76,15 @@ public class UserImpl implements UserService {
             new RuntimeException("Usuario no encontrado"));
 
         user.setActive(false);
+        repository.save(user);
+    }
+
+    @Override
+    public void activateUser(Long id){
+        UserEntity user = repository.findById(id).orElseThrow(() ->
+            new RuntimeException("Usuario no encontrado"));
+
+        user.setActive(true);
         repository.save(user);
     }
 }
