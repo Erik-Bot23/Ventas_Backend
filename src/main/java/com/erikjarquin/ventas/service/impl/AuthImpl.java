@@ -30,12 +30,14 @@ public class AuthImpl implements AuthService {
                 .map(user -> new LoginResponse(
                     true,
                     user.getId(),
+                    user.getName(),
                     user.getEmail(),
                     user.getRole().name()
                 ))
                 .orElse(
                     new LoginResponse(
                         false,
+                        null,
                         null,
                         null,
                         null
