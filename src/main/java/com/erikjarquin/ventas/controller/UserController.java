@@ -46,7 +46,7 @@ public class UserController {
         service.deactivateUser(id);
     }
 
-    @PatchMapping("/{id}/activate")
+    @PatchMapping("/{id}/active")
     public void activateUser(@PathVariable Long id){
         service.activateUser(id);
     }
