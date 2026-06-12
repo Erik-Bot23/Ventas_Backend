@@ -69,7 +69,7 @@ public class ProductDto {
     //getters y setters de imagen
     public String getImg(){
         return img;
-    }
+    }   
 
     public void setImg(String img){
         this.img=img;
