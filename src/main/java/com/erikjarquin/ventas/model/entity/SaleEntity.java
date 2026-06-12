@@ -1,6 +1,8 @@
 package com.erikjarquin.ventas.model.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
@@ -22,9 +24,9 @@ public class SaleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate saleDate;
+    private LocalDateTime saleDate;
 
-    private Double total;
+    private BigDecimal total;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
@@ -52,20 +54,20 @@ public class SaleEntity {
     }
 
     //Getter y setter de saleDate
-    public LocalDate getDate(){
+    public LocalDateTime getDate(){
         return saleDate;
     }
 
-    public void setDate(LocalDate saleDate){
+    public void setDate(LocalDateTime saleDate){
         this.saleDate=saleDate;
     }
 
     //Getter y setter de total
-    public Double getTotal(){
+    public BigDecimal getTotal(){
         return total;
     }
 
-    public void setTotal(Double total){
+    public void setTotal(BigDecimal total){
         this.total=total;
     }
 

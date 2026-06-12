@@ -9,20 +9,25 @@ import com.erikjarquin.ventas.model.dto.ProductDto;
 public interface ProductService {
     List<ProductDto> getAll();
     List<ProductDto> getByCategory(String category); //¿Long categoryId?
+    
     ProductDto save(
         String name,
-        double price,
+        BigDecimal price,
         int stock,
         Long categoryId,
         MultipartFile image
     );
+
     ProductDto update(
         Long id,
         String name,
-        double price,
+        BigDecimal price,
         int stock,
         Long categoryId,
         MultipartFile image
     );
+
     void delete(Long id);
+
+    ProductDto findByBarcode(String barcode);
 } 

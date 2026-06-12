@@ -1,14 +1,14 @@
 package com.erikjarquin.ventas.model.dto;
 
+import java.math.BigDecimal;
+
 public class ProductDto {
     private Long id;
     private String name;
-    private double price;
+    private BigDecimal price;
     private int stock;
-
     private Long categoryId;
     private String categoryName;
-
     private String img;
 
     public ProductDto(){}
@@ -32,11 +32,11 @@ public class ProductDto {
     }
 
     //getters y setters de precio
-    public double getPrice(){
+    public BigDecimal getPrice(){
         return price;
     }
 
-    public void setPrice(double price){
+    public void setPrice(BigDecimal price){
         this.price=price;
     }
 

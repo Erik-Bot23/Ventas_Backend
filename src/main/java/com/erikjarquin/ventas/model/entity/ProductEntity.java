@@ -1,5 +1,7 @@
 package com.erikjarquin.ventas.model.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,7 +24,7 @@ public class ProductEntity {
     private String name;
 
     @Column(nullable = false)
-    private double price;
+    private BigDecimal price;
 
     @Column(nullable = false)
     private int stock;
@@ -32,6 +34,12 @@ public class ProductEntity {
     private CategoryEntity category;
 
     private String img;
+
+    @Column(unique = true)
+    private String barcode;
+
+    @Column(unique = true)
+    private String sku;
 
     public ProductEntity(){}
 
@@ -54,11 +62,11 @@ public class ProductEntity {
     }
 
     //getter y setter de price
-    public double getPrice(){
+    public BigDecimal getPrice(){
         return price;
     }
 
-    public void setPrice(double price){
+    public void setPrice(BigDecimal price){
         this.price=price;
     }
 
@@ -88,4 +96,23 @@ public class ProductEntity {
     public void setImg(String img){
         this.img=img;
     }
+
+    //Getter y setter de barcode
+    public String getBarcode(){
+        return barcode;
+    }
+
+    public void setBarcode(String barcode){
+        this.barcode=barcode;
+    }
+
+    //Getter y setter de sku
+    public String getSku(){
+        return sku;
+    }
+
+    public void setSku(String sku){
+        this.sku=sku;
+    }
 }
+

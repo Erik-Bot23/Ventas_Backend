@@ -1,5 +1,6 @@
 package com.erikjarquin.ventas.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class ProductImpl implements ProductService {
     @Override
     public ProductDto save(
         String name,
-        double price,
+        BigDecimal price,
         int stock,
         Long categoryId,
         MultipartFile image
@@ -67,7 +68,7 @@ public class ProductImpl implements ProductService {
     public ProductDto update(
         Long id,
         String name,
-        double price,
+        BigDecimal price,
         int stock,
         Long categoryId,
         MultipartFile image
@@ -89,11 +90,17 @@ public class ProductImpl implements ProductService {
 
         return ProductMapper.toDto(updated);
     }
+
     @Override
     public void delete(Long id){
         if(!repository.existsById(id)){
             throw new RuntimeException("Producto no encontrado");
         }
         repository.deleteById(id);
+    }
+
+    @Override
+    public ProductDto findByBarcode(String barcode){
+        return null;
     }
 }

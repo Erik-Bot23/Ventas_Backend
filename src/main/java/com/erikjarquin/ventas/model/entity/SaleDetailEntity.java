@@ -1,5 +1,7 @@
 package com.erikjarquin.ventas.model.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,9 +27,9 @@ public class SaleDetailEntity {
 
     private Integer quantity;
 
-    private Double unitPrice;
+    private BigDecimal unitPrice;
 
-    private Double subtotal;
+    private BigDecimal subtotal;
 
     public SaleDetailEntity(){}
 
@@ -68,20 +70,20 @@ public class SaleDetailEntity {
     }
 
     //Getter y setter de unitPrice
-    public Double getUnitPrice(){
+    public BigDecimal getUnitPrice(){
         return unitPrice;
     }
 
-    public void setUnitPrice(Double unitPrice){
+    public void setUnitPrice(BigDecimal unitPrice){
         this.unitPrice=unitPrice;
     }
 
     //Getter y setter de subtotal
-    public Double getSubTotal(){
+    public BigDecimal getSubTotal(){
         return subtotal;
     }
 
-    public void setSubTotal(Double subTotal){
+    public void setSubTotal(BigDecimal subTotal){
         this.subtotal=subTotal;
     }
 

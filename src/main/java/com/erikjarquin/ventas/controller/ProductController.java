@@ -1,6 +1,8 @@
 package com.erikjarquin.ventas.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,7 @@ public class ProductController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProductDto saveProduct(
         @RequestParam("name") String name,
-        @RequestParam("price") double price,
+        @RequestParam("price") BigDecimal price,
         @RequestParam("stock") int stock,
         @RequestParam("categoryId") Long categoryId,
         @RequestParam(value = "image", required = false) MultipartFile image
@@ -51,7 +53,7 @@ public class ProductController {
     public ProductDto updateProduct(
         @PathVariable Long id,
         @RequestParam String name,
-        @RequestParam double price,
+        @RequestParam BigDecimal price,
         @RequestParam int stock,
         @RequestParam Long categoryId,
         @RequestParam(value = "image", required = false) MultipartFile image
@@ -63,5 +65,10 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/barcode/{barcode}")
+    public ProductDto findByBarcode(@PathVariable String barcode){
+        return service.findByBarcode(barcode);
     }
 }
