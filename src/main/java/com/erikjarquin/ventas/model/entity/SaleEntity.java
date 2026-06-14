@@ -1,7 +1,6 @@
 package com.erikjarquin.ventas.model.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,9 +30,9 @@ public class SaleEntity {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    private Double cashReceived;
+    private BigDecimal cashReceived;
 
-    private Double changeAmount;
+    private BigDecimal changeAmount;
 
     @OneToMany(
         mappedBy = "sale",
@@ -81,20 +80,20 @@ public class SaleEntity {
     }
 
     //Getter y setter de cashReceived
-    public Double getCash(){
+    public BigDecimal getCash(){
         return cashReceived;
     }
 
-    public void setCash(Double cashReceived){
+    public void setCash(BigDecimal cashReceived){
         this.cashReceived=cashReceived;
     }
 
     //Getter y setter de changeAmount
-    public Double getChange(){
+    public BigDecimal getChange(){
         return changeAmount;
     }
 
-    public void setChange(Double changeAmount){
+    public void setChange(BigDecimal changeAmount){
         this.changeAmount=changeAmount;
     }
 

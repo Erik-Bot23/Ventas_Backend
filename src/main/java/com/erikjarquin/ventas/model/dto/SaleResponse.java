@@ -7,7 +7,7 @@ public class SaleResponse {
 
     private BigDecimal total;
 
-    private Double changeAmount;
+    private BigDecimal changeAmount;
 
     public SaleResponse(){}
 
@@ -30,11 +30,11 @@ public class SaleResponse {
     }
 
     //Getter y setter changeAmount
-    public Double getChangeAmount(){
+    public BigDecimal getChangeAmount(){
         return changeAmount;
     }
 
-    public void setChangeAmount(Double changeAmount){
+    public void setChangeAmount(BigDecimal changeAmount){
         this.changeAmount=changeAmount;
     }
 }

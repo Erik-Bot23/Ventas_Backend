@@ -4,10 +4,10 @@ package com.erikjarquin.ventas.model.dto;
 public class UpdateUserRequest {
     private String name;
     private String email;
-    private String role;
+    private Long roleId;
     private boolean active;
 
-    //getters y setters
+    //Getter y setter
     public String getName(){
         return name;
     }
@@ -16,6 +16,7 @@ public class UpdateUserRequest {
         this.name = name;
     }
 
+    //Getter y setter
     public String getEmail(){
         return email;
     }
@@ -24,14 +25,16 @@ public class UpdateUserRequest {
         this.email=email;
     }
 
-    public String getRole(){
-        return role;
+    //Getter y setter
+    public Long getRoleId(){
+        return roleId;
     }
 
-    public void setRole(String role){
-        this.role=role;
+    public void setRoleId(Long roleId){
+        this.roleId=roleId;
     }
 
+    //Getter y setter
     public boolean isActive(){
         return active;
     }

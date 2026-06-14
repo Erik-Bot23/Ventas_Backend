@@ -4,9 +4,9 @@ public class CreateUserRequest {
     private String name;
     private String email;
     private String password;
-    private String role;
+    private Long roleId;
 
-    //getters y setters
+    //Getter y setter de name
     public String getName(){
         return name;
     }
@@ -15,6 +15,7 @@ public class CreateUserRequest {
         this.name = name;
     }
 
+    //Getter y setter de email
     public String getEmail(){
         return email;
     }
@@ -23,6 +24,7 @@ public class CreateUserRequest {
         this.email=email;
     }
 
+    //Getter y setter de password
     public String getPassword(){
         return password;
     }
@@ -31,11 +33,12 @@ public class CreateUserRequest {
         this.password=password;
     }
 
-    public String getRole(){
-        return role;
+    //Getter y setter de role
+    public Long getRoleId(){
+        return roleId;
     }
 
-    public void setRole(String role){
-        this.role=role;
+    public void setRoleId(Long roleId){
+        this.roleId=roleId;
     }
 }

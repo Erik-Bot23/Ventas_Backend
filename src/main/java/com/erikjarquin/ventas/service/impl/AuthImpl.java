@@ -32,7 +32,7 @@ public class AuthImpl implements AuthService {
                     user.getId(),
                     user.getName(),
                     user.getEmail(),
-                    user.getRole().name()
+                    user.getRole().getName()
                 ))
                 .orElse(
                     new LoginResponse(

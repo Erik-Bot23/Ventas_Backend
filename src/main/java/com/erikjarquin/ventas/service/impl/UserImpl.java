@@ -9,8 +9,9 @@ import com.erikjarquin.ventas.mapper.UserMapper;
 import com.erikjarquin.ventas.model.dto.CreateUserRequest;
 import com.erikjarquin.ventas.model.dto.UpdateUserRequest;
 import com.erikjarquin.ventas.model.dto.UserDto;
+import com.erikjarquin.ventas.model.entity.RoleEntity;
 import com.erikjarquin.ventas.model.entity.UserEntity;
-import com.erikjarquin.ventas.model.enums.Role;
+import com.erikjarquin.ventas.repository.RoleRepository;
 import com.erikjarquin.ventas.repository.UserRepository;
 import com.erikjarquin.ventas.service.UserService;
 
@@ -18,11 +19,15 @@ import com.erikjarquin.ventas.service.UserService;
 @Service
 public class UserImpl implements UserService {
     private final UserRepository repository;
+     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserImpl(UserRepository repository, PasswordEncoder passwordEncoder){
+    public UserImpl(UserRepository repository, 
+        PasswordEncoder passwordEncoder,
+        RoleRepository roleRepository){
         this.repository=repository;
         this.passwordEncoder=passwordEncoder;
+        this.roleRepository=roleRepository;
     }
 
    @Override
@@ -36,10 +41,11 @@ public class UserImpl implements UserService {
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.valueOf(request.getRole().toUpperCase()));
 
+        RoleEntity role = roleRepository.findById(request.getRoleId()).orElseThrow(() -> 
+            new RuntimeException("Rol no encontrado"));
+        user.setRole(role);
         user.setActive(true);
 
         if(repository.findByEmail(request.getEmail()).isPresent()){
@@ -60,11 +66,11 @@ public class UserImpl implements UserService {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
 
-        user.setRole(Role.valueOf(request.getRole().toUpperCase()));
-
+        RoleEntity role = roleRepository.findById(request.getRoleId()).orElseThrow(() -> 
+            new RuntimeException("Rol no encontrado"));
+        user.setRole(role);
         //Quitar esta línea para evitar el false en active al actualizar
         //user.setActive(request.isActive());
-
         UserEntity updated = repository.save(user);
 
         return UserMapper.toDto(updated);

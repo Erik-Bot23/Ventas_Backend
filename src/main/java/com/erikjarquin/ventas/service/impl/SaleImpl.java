@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.erikjarquin.ventas.model.dto.SaleItemRequest;
 import com.erikjarquin.ventas.model.dto.SaleRequest;
 import com.erikjarquin.ventas.model.dto.SaleResponse;
@@ -16,6 +18,7 @@ import com.erikjarquin.ventas.repository.ProductRepository;
 import com.erikjarquin.ventas.repository.SaleRepository;
 import com.erikjarquin.ventas.service.SaleService;
 
+@Service
 public class SaleImpl implements SaleService {
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
@@ -35,7 +38,7 @@ public class SaleImpl implements SaleService {
         sale.setPayment(request.getPayment());
 
         List<SaleDetailEntity> details = new ArrayList<>();
-        BigDecimal total = 0.0;
+        BigDecimal total = BigDecimal.ZERO;
 
         for(SaleItemRequest item : request.getItems()){
             ProductEntity product = productRepository.findById(item.getProductId()).orElseThrow();
@@ -44,8 +47,8 @@ public class SaleImpl implements SaleService {
                 throw new RuntimeException("Stock insuficiente: " + product.getName());
             }
 
-            BigDecimal subtotal = product.getPrice() * item.getQuantity();
-            total += subtotal;
+            BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+            total = total.add(subtotal);
             product.setStock(product.getStock() - item.getQuantity());
             productRepository.save(product);
             
@@ -59,9 +62,10 @@ public class SaleImpl implements SaleService {
         }
 
         sale.setTotal(total);
+        BigDecimal change = request.getCash().subtract(total);
         if(request.getPayment() == PaymentMethod.CASH){
             sale.setCash(request.getCash());
-            sale.setChange(request.getCash() - total);
+            sale.setChange(change);
         }
 
         sale.setDetails(details);

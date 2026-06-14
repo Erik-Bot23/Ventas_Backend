@@ -101,6 +101,9 @@ public class ProductImpl implements ProductService {
 
     @Override
     public ProductDto findByBarcode(String barcode){
-        return null;
+        ProductEntity product = repository.findByBarcode(barcode).orElseThrow(() ->
+            new RuntimeException("Producto no encontrado"));
+
+        return ProductMapper.toDto(product);
     }
 }

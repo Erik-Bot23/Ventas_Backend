@@ -2,7 +2,6 @@ package com.erikjarquin.ventas.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +45,7 @@ public class ProductController {
         @RequestParam("categoryId") Long categoryId,
         @RequestParam(value = "image", required = false) MultipartFile image
     ){
-        return service.save(name, price, stock, categoryId, image);
+        return service.save(name, price, stock, categoryId, image); //Me marca erro aqui
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -58,7 +57,7 @@ public class ProductController {
         @RequestParam Long categoryId,
         @RequestParam(value = "image", required = false) MultipartFile image
     ){
-        return service.update(id, name, price, stock, categoryId, image);
+        return service.update(id, name, price, stock, categoryId, image); //Aqui me marca error
     }
 
     @DeleteMapping("/{id}")

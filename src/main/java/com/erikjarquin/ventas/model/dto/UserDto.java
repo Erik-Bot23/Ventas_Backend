@@ -4,9 +4,11 @@ public class UserDto {
     private Long id;
     private String name;
     private String email;
-    private String role;
+    private Long roleId;
+    private String roleName;
     private boolean active;
 
+    //Getter y setter de id
     public Long getId(){
         return id;
     }
@@ -15,6 +17,7 @@ public class UserDto {
         this.id=id;
     }
 
+    //Getter y setter de name
     public String getName(){
         return name;
     }
@@ -23,6 +26,7 @@ public class UserDto {
         this.name=name;
     }
 
+    //Getter y setter de email
     public String getEmail(){
         return email;
     }
@@ -31,14 +35,24 @@ public class UserDto {
         this.email=email;
     }
 
-    public String getRole(){
-        return role;
+    //Getter y setter de role
+    public Long getRoleId(){
+        return roleId;
     }
 
-    public void setRole(String role){
-        this.role=role;
+    public void setRoleId(Long roleId){
+        this.roleId=roleId;
     }
 
+    public String getRoleName(){
+        return roleName;
+    }
+
+    public void setRoleName(String roleName){
+        this.roleName=roleName;
+    }
+
+    //Getter y setter de active
      public boolean isActive(){
         return active;
     }

@@ -11,8 +11,12 @@ public class UserMapper {
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setEmail(entity.getEmail());
-        dto.setRole(entity.getRole().name());
         dto.setActive(entity.isActive());
+
+        if (entity.getRole() != null) {
+            dto.setRoleId(entity.getRole().getId());
+            dto.setRoleName(entity.getRole().getName());
+        }
         
         return dto;
     }

@@ -1,5 +1,6 @@
 package com.erikjarquin.ventas.model.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
@@ -7,7 +8,7 @@ import com.erikjarquin.ventas.model.enums.PaymentMethod;
 public class SaleRequest {
     private PaymentMethod paymentMethod;
 
-    private Double cashReceived;
+    private BigDecimal cashReceived;
 
     private List<SaleItemRequest> items;
 
@@ -23,11 +24,11 @@ public class SaleRequest {
     }
 
     //Getter y setter de paymentMethod
-    public Double getCash(){
+    public BigDecimal getCash(){
         return cashReceived;
     }
 
-    public void setCash(Double cashReceived){
+    public void setCash(BigDecimal cashReceived){
         this.cashReceived=cashReceived;
     }
 
