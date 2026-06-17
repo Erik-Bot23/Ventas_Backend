@@ -106,4 +106,10 @@ public class ProductImpl implements ProductService {
 
         return ProductMapper.toDto(product);
     }
+
+    @Override
+    public List<ProductDto> search(String q){
+        return repository.search(q).stream().map(ProductMapper::toDto).collect(Collectors.toList());
+    }
+
 }

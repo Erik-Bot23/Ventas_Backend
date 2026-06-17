@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import com.erikjarquin.ventas.model.dto.ProductDto;
+import com.erikjarquin.ventas.model.entity.ProductEntity;
 
 public interface ProductService {
     List<ProductDto> getAll();
@@ -29,4 +30,6 @@ public interface ProductService {
     void delete(Long id);
 
     ProductDto findByBarcode(String barcode);
+
+    List<ProductDto> search(String q);
 } 

@@ -23,7 +23,7 @@ public class RoleBootstrap  implements CommandLineRunner {
             adminRole.setName("ADMIN");
             roleRepository.save(adminRole);
 
-            System.out.println("Rol ADMIN nos creado");
+            System.out.println("Rol ADMIN creado");
         }
     }
 }

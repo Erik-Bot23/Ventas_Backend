@@ -70,4 +70,9 @@ public class ProductController {
     public ProductDto findByBarcode(@PathVariable String barcode){
         return service.findByBarcode(barcode);
     }
+
+    @GetMapping("/search")
+    public List<ProductDto> search(@RequestParam String q){
+        return service.search(q);
+    }
 }
