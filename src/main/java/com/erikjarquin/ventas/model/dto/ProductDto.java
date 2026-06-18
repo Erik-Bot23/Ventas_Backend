@@ -10,6 +10,8 @@ public class ProductDto {
     private Long categoryId;
     private String categoryName;
     private String img;
+    private String sku;
+    private String barcode;
 
     public ProductDto(){}
 
@@ -73,5 +75,23 @@ public class ProductDto {
 
     public void setImg(String img){
         this.img=img;
+    }
+
+    //Getter y setter de sku
+    public String getSku(){
+        return sku;
+    }
+
+    public void setSku(String sku){
+        this.sku=sku;
+    }
+
+    //Getter y setter de barcode
+    public String getBarcode(){
+        return barcode;
+    }
+
+    public void setBarcode(String barcode){
+        this.barcode=barcode;
     }
 }

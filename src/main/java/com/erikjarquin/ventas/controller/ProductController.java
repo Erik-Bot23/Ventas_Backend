@@ -43,9 +43,11 @@ public class ProductController {
         @RequestParam("price") BigDecimal price,
         @RequestParam("stock") int stock,
         @RequestParam("categoryId") Long categoryId,
+        @RequestParam("sku") String sku,
+        @RequestParam("barcode") String barcode,
         @RequestParam(value = "image", required = false) MultipartFile image
     ){
-        return service.save(name, price, stock, categoryId, image); //Me marca erro aqui
+        return service.save(name, price, stock, categoryId, sku, barcode, image); //Me marca erro aqui
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -55,9 +57,11 @@ public class ProductController {
         @RequestParam BigDecimal price,
         @RequestParam int stock,
         @RequestParam Long categoryId,
+        @RequestParam String sku,
+        @RequestParam String barcode,
         @RequestParam(value = "image", required = false) MultipartFile image
     ){
-        return service.update(id, name, price, stock, categoryId, image); //Aqui me marca error
+        return service.update(id, name, price, stock, categoryId, sku, barcode, image); //Aqui me marca error
     }
 
     @DeleteMapping("/{id}")

@@ -19,6 +19,9 @@ public class ProductMapper {
             dto.setCategoryName(entity.getCategory().getName());
         }
 
+        dto.setSku(entity.getSku());
+        dto.setBarcode(entity.getBarcode());
+
         return dto;
     }
 }

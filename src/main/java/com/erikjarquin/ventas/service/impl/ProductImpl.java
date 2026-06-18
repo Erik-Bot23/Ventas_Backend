@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.text.html.parser.Entity;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +43,8 @@ public class ProductImpl implements ProductService {
         BigDecimal price,
         int stock,
         Long categoryId,
+        String sku,
+        String barcode,
         MultipartFile image
     ){
         ProductEntity entity = new ProductEntity();
@@ -53,6 +57,8 @@ public class ProductImpl implements ProductService {
                         new RuntimeException("Categoria no encontrada"));
                                         
         entity.setCategory(category);
+        entity.setSku(sku);
+        entity.setBarcode(barcode);
 
         //Temporal
         if(image != null){
@@ -71,6 +77,8 @@ public class ProductImpl implements ProductService {
         BigDecimal price,
         int stock,
         Long categoryId,
+        String sku,
+        String barcode,
         MultipartFile image
     ){
         ProductEntity entity = repository.findById(id).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
@@ -80,6 +88,8 @@ public class ProductImpl implements ProductService {
 
         CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
         entity.setCategory(category);
+        entity.setSku(sku);
+        entity.setBarcode(barcode);
 
         //Opcional: meanjear imagen
         if(image != null && !image.isEmpty()){

@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import com.erikjarquin.ventas.model.dto.ProductDto;
-import com.erikjarquin.ventas.model.entity.ProductEntity;
 
 public interface ProductService {
     List<ProductDto> getAll();
@@ -15,6 +14,8 @@ public interface ProductService {
         BigDecimal price,
         int stock,
         Long categoryId,
+        String sku,
+        String barcode,
         MultipartFile image
     );
 
@@ -24,6 +25,8 @@ public interface ProductService {
         BigDecimal price,
         int stock,
         Long categoryId,
+        String sku,
+        String barcode,
         MultipartFile image
     );
 
