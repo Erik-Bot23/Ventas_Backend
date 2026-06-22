@@ -15,20 +15,20 @@ public class SaleRequest {
     public SaleRequest(){}
 
     //Getter y setter de paymentMethod
-    public PaymentMethod getPayment(){
+    public PaymentMethod getPaymentMethod(){
         return paymentMethod;
     }
 
-    public void setPayment(PaymentMethod paymentMethod){
+    public void setPaymentMethod(PaymentMethod paymentMethod){
         this.paymentMethod=paymentMethod;
     }
 
     //Getter y setter de paymentMethod
-    public BigDecimal getCash(){
+    public BigDecimal getCashReceived(){
         return cashReceived;
     }
 
-    public void setCash(BigDecimal cashReceived){
+    public void setCashReceived(BigDecimal cashReceived){
         this.cashReceived=cashReceived;
     }
 

@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
 import com.erikjarquin.ventas.model.dto.SaleItemRequest;
 import com.erikjarquin.ventas.model.dto.SaleRequest;
 import com.erikjarquin.ventas.model.dto.SaleResponse;
@@ -19,6 +21,7 @@ import com.erikjarquin.ventas.repository.SaleRepository;
 import com.erikjarquin.ventas.service.SaleService;
 
 @Service
+@Transactional
 public class SaleImpl implements SaleService {
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
@@ -35,7 +38,7 @@ public class SaleImpl implements SaleService {
     public SaleResponse processSale(SaleRequest request){
         SaleEntity sale = new SaleEntity();
         sale.setDate(LocalDateTime.now());
-        sale.setPayment(request.getPayment());
+        sale.setPaymentMethod(request.getPaymentMethod());
 
         List<SaleDetailEntity> details = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -61,11 +64,14 @@ public class SaleImpl implements SaleService {
             details.add(detail);
         }
 
+        if(request.getPaymentMethod() == PaymentMethod.CASH && request.getCashReceived().compareTo(total) < 0){
+            throw new RuntimeException("Pago insuficiente");
+        }
         sale.setTotal(total);
-        BigDecimal change = request.getCash().subtract(total);
-        if(request.getPayment() == PaymentMethod.CASH){
-            sale.setCash(request.getCash());
-            sale.setChange(change);
+        BigDecimal change = request.getCashReceived().subtract(total);
+        if(request.getPaymentMethod() == PaymentMethod.CASH){
+            sale.setCashReceived(request.getCashReceived());
+            sale.setChangeAmount(change);
         }
 
         sale.setDetails(details);
@@ -73,8 +79,24 @@ public class SaleImpl implements SaleService {
         SaleResponse response = new SaleResponse();
         response.setSaleId(saved.getId());
         response.setTotal(total);
-        response.setChangeAmount(sale.getChange());
+        response.setChangeAmount(sale.getChangeAmount());
         
         return response;
+    }
+
+    @Override
+    public List<SaleHistoryResponse> getSales(){
+        return saleRepository.findAll().stream().map(sale -> {
+            SaleHistoryResponse dto = new SaleHistoryResponse();
+
+            dto.setId(sale.getId());
+            dto.setSaleDate(sale.getDate());
+            dto.setTotal(sale.getTotal());
+            dto.setPaymentMethod(sale.getPaymentMethod());
+            dto.setCashReceived(sale.getCashReceived());
+            dto.setChangeAmount(sale.getChangeAmount());
+
+            return dto;
+        }).toList();
     }
 }
