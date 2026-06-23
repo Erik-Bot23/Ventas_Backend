@@ -8,6 +8,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.erikjarquin.ventas.model.dto.SaleDetailHistoryResponse;
+import com.erikjarquin.ventas.model.dto.SaleDetailResponse;
 import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
 import com.erikjarquin.ventas.model.dto.SaleItemRequest;
 import com.erikjarquin.ventas.model.dto.SaleRequest;
@@ -16,6 +18,7 @@ import com.erikjarquin.ventas.model.entity.ProductEntity;
 import com.erikjarquin.ventas.model.entity.SaleDetailEntity;
 import com.erikjarquin.ventas.model.entity.SaleEntity;
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
+import com.erikjarquin.ventas.repository.CashRegisterRepository;
 import com.erikjarquin.ventas.repository.ProductRepository;
 import com.erikjarquin.ventas.repository.SaleRepository;
 import com.erikjarquin.ventas.service.SaleService;
@@ -25,17 +28,23 @@ import com.erikjarquin.ventas.service.SaleService;
 public class SaleImpl implements SaleService {
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
+    private final CashRegisterRepository cashRepository;
 
     public SaleImpl(
         ProductRepository productRepository,
-        SaleRepository saleRepository
+        SaleRepository saleRepository,
+        CashRegisterRepository cashRepository
     ){
         this.productRepository = productRepository;
         this.saleRepository = saleRepository;
+        this.cashRepository = cashRepository;
     }
 
     @Override 
     public SaleResponse processSale(SaleRequest request){
+        cashRepository.findByActiveTrue().orElseThrow(() -> 
+            new RuntimeException("No existe una caja abierta"));
+
         SaleEntity sale = new SaleEntity();
         sale.setDate(LocalDateTime.now());
         sale.setPaymentMethod(request.getPaymentMethod());
@@ -98,5 +107,31 @@ public class SaleImpl implements SaleService {
 
             return dto;
         }).toList();
+    }
+
+    @Override
+    public SaleDetailHistoryResponse getSaleById(Long saleId){
+        SaleEntity sale = saleRepository.findById(saleId).orElseThrow();
+
+        SaleDetailHistoryResponse dto = new SaleDetailHistoryResponse();
+
+        dto.setSaleId(sale.getId());
+        dto.setSaleDate(sale.getDate());
+        dto.setTotal(sale.getTotal());
+        dto.setPaymentMethod(sale.getPaymentMethod());
+
+        List<SaleDetailResponse> details = sale.getDetails().stream().map(detail -> {
+            SaleDetailResponse item = new SaleDetailResponse();
+
+            item.setProduct(detail.getProduct().getName());
+            item.setQuantity(detail.getQuantity());
+            item.setUnitPrice(detail.getUnitPrice());
+            item.setSubtotal(detail.getSubtotal());
+
+            return item;
+        }).toList();
+
+        dto.setItems(details);
+        return dto;
     }
 }

@@ -33,5 +33,10 @@ public class SaleController {
     public List<SaleHistoryResponse> getSales(){
         return service.getSales();
     }
+
+    @GetMapping("/{id}")
+    public SaleDetailHistoryResponse getSaleById(@PathVariable Long Id){
+        return service.getSaleById(id);
+    }
     
 }
