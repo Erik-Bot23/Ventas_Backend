@@ -126,7 +126,7 @@ public class SaleImpl implements SaleService {
             item.setProduct(detail.getProduct().getName());
             item.setQuantity(detail.getQuantity());
             item.setUnitPrice(detail.getUnitPrice());
-            item.setSubtotal(detail.getSubtotal());
+            item.setSubtotal(detail.getSubTotal());
 
             return item;
         }).toList();

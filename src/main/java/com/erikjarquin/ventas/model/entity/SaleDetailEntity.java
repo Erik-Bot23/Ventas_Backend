@@ -83,8 +83,8 @@ public class SaleDetailEntity {
         return subtotal;
     }
 
-    public void setSubTotal(BigDecimal subTotal){
-        this.subtotal=subTotal;
+    public void setSubTotal(BigDecimal subtotal){
+        this.subtotal=subtotal;
     }
 
 

@@ -13,5 +13,49 @@ public class SaleDetailHistoryResponse {
     private PaymentMethod paymentMethod;
     private List<SaleDetailResponse> items;
 
+    //Getter y setter de saleId
+    public Long getSaleId(){
+        return saleId;
+    }
+
+    public void setSaleId(Long saleId){
+        this.saleId = saleId;
+    }
+
+    //Getter y setter de saleDate
+    public LocalDateTime getSaleDate(){
+        return saleDate;
+    }
+
+    public void setSaleDate(LocalDateTime saleDate){
+        this.saleDate = saleDate;
+    }
+
+    //Getter y setter de total
+    public BigDecimal getTotal(){
+        return total;
+    }
+
+    public void setTotal(BigDecimal total){
+        this.total = total;
+    }
+
+    //Getter y setter paymentMethod
+    public PaymentMethod getPaymentMethod(){
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod){
+        this.paymentMethod = paymentMethod;
+    }
+
+    //Getter y setter items
+    public List<SaleDetailResponse> getItems(){
+        return items;
+    }
+
+    public void setItems(List<SaleDetailResponse> items){
+        this.items = items;
+    }
     
 }
