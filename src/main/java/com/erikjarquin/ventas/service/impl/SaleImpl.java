@@ -8,8 +8,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.erikjarquin.ventas.mapper.SaleMapper;
 import com.erikjarquin.ventas.model.dto.SaleDetailHistoryResponse;
-import com.erikjarquin.ventas.model.dto.SaleDetailResponse;
 import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
 import com.erikjarquin.ventas.model.dto.SaleItemRequest;
 import com.erikjarquin.ventas.model.dto.SaleRequest;
@@ -29,15 +29,18 @@ public class SaleImpl implements SaleService {
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
     private final CashRegisterRepository cashRepository;
+    private final SaleMapper mapper;
 
     public SaleImpl(
         ProductRepository productRepository,
         SaleRepository saleRepository,
-        CashRegisterRepository cashRepository
+        CashRegisterRepository cashRepository,
+        SaleMapper mapper
     ){
         this.productRepository = productRepository;
         this.saleRepository = saleRepository;
         this.cashRepository = cashRepository;
+        this.mapper = mapper;
     }
 
     @Override 
@@ -90,12 +93,13 @@ public class SaleImpl implements SaleService {
         response.setTotal(total);
         response.setChangeAmount(sale.getChangeAmount());
         
-        return response;
+        return mapper.toResponse(saved);
     }
 
     @Override
     public List<SaleHistoryResponse> getSales(){
-        return saleRepository.findAll().stream().map(sale -> {
+        return saleRepository.findAll().stream().map(
+            /*sale -> {
             SaleHistoryResponse dto = new SaleHistoryResponse();
 
             dto.setId(sale.getId());
@@ -106,16 +110,18 @@ public class SaleImpl implements SaleService {
             dto.setChangeAmount(sale.getChangeAmount());
 
             return dto;
-        }).toList();
+        }*/
+        mapper::toHistoryResponse
+        ).toList();
     }
 
     @Override
     public SaleDetailHistoryResponse getSaleById(Long saleId){
         SaleEntity sale = saleRepository.findById(saleId).orElseThrow();
 
-        SaleDetailHistoryResponse dto = new SaleDetailHistoryResponse();
+        //SaleDetailHistoryResponse dto = new SaleDetailHistoryResponse();
 
-        dto.setSaleId(sale.getId());
+        /*dto.setSaleId(sale.getId());
         dto.setSaleDate(sale.getDate());
         dto.setTotal(sale.getTotal());
         dto.setPaymentMethod(sale.getPaymentMethod());
@@ -131,7 +137,7 @@ public class SaleImpl implements SaleService {
             return item;
         }).toList();
 
-        dto.setItems(details);
-        return dto;
+        dto.setItems(details);*/
+        return mapper.toDetailResponse(sale);
     }
 }

@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.service.impl;
 
 import java.time.LocalDateTime;
 
+import com.erikjarquin.ventas.mapper.CashRegisterMapper;
 import com.erikjarquin.ventas.model.dto.CashResponse;
 import com.erikjarquin.ventas.model.dto.CloseCashRequest;
 import com.erikjarquin.ventas.model.dto.OpenCashRequest;
@@ -11,9 +12,13 @@ import com.erikjarquin.ventas.service.CashRegisterService;
 
 public class CashRegisterImpl implements CashRegisterService {
     private final CashRegisterRepository repository;
+    private final CashRegisterMapper mapper;
 
-    public CashRegisterImpl(CashRegisterRepository repository){
+    public CashRegisterImpl(
+        CashRegisterRepository repository,
+        CashRegisterMapper mapper){
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -29,7 +34,7 @@ public class CashRegisterImpl implements CashRegisterService {
         cash.setActive(true);
         repository.save(cash);
 
-        return toResponse(cash);
+        return mapper.toResponse(cash);
     }
 
     @Override
@@ -42,7 +47,7 @@ public class CashRegisterImpl implements CashRegisterService {
         cash.setActive(false);
         repository.save(cash);
 
-        return toResponse(cash);
+        return mapper.toResponse(cash);
     }
 
     @Override
@@ -50,6 +55,6 @@ public class CashRegisterImpl implements CashRegisterService {
         CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() ->
             new RuntimeException("No existe la caja abierta"));
 
-        return toResponse(cash);
+        return mapper.toResponse(cash);
     }
 }

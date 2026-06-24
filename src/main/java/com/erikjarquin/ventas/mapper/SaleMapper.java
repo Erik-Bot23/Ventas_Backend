@@ -1,0 +1,60 @@
+package com.erikjarquin.ventas.mapper;
+
+import java.util.List;
+
+import com.erikjarquin.ventas.model.dto.SaleDetailHistoryResponse;
+import com.erikjarquin.ventas.model.dto.SaleDetailResponse;
+import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
+import com.erikjarquin.ventas.model.dto.SaleResponse;
+import com.erikjarquin.ventas.model.entity.SaleDetailEntity;
+import com.erikjarquin.ventas.model.entity.SaleEntity;
+
+public class SaleMapper {
+    public SaleResponse toResponse(SaleEntity sale){
+        SaleResponse response = new SaleResponse();
+
+        response.setSaleId(sale.getId());
+        response.setTotal(sale.getTotal());
+        response.setChangeAmount(sale.getChangeAmount());
+
+        return response;
+    }
+
+    public SaleHistoryResponse toHistoryResponse(SaleEntity sale){
+        SaleHistoryResponse response = new SaleHistoryResponse();
+
+        response.setId(sale.getId());
+        response.setSaleDate(sale.getDate());
+        response.setTotal(sale.getTotal());
+        response.setPaymentMethod(sale.getPaymentMethod());
+        response.setCashReceived(sale.getCashReceived());
+        response.setChangeAmount(sale.getChangeAmount());
+
+        return response;
+    }
+
+    public SaleDetailHistoryResponse toDetailResponse(SaleEntity sale){
+        SaleDetailHistoryResponse response = new SaleDetailHistoryResponse();
+
+        response.setSaleId(sale.getId());
+        response.setSaleDate(sale.getDate());
+        response.setTotal(sale.getTotal());
+        response.setPaymentMethod(sale.getPaymentMethod());
+        List<SaleDetailResponse> items = sale.getDetails().stream().map(this::toDetailItem).toList();
+        response.setItems(items);
+
+        return response;
+        
+    }
+
+    private SaleDetailResponse toDetailItem(SaleDetailEntity detail){
+        SaleDetailResponse item = new SaleDetailResponse();
+
+        item.setProduct(detail.getProduct().getName());
+        item.setQuantity(detail.getQuantity());
+        item.setUnitPrice(detail.getUnitPrice());
+        item.setSubtotal(detail.getSubTotal());
+
+        return item;
+    }
+}
