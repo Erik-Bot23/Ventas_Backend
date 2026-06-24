@@ -2,6 +2,8 @@ package com.erikjarquin.ventas.service.impl;
 
 import java.time.LocalDateTime;
 
+import org.springframework.stereotype.Service;
+
 import com.erikjarquin.ventas.mapper.CashRegisterMapper;
 import com.erikjarquin.ventas.model.dto.CashResponse;
 import com.erikjarquin.ventas.model.dto.CloseCashRequest;
@@ -10,6 +12,7 @@ import com.erikjarquin.ventas.model.entity.CashRegisterEntity;
 import com.erikjarquin.ventas.repository.CashRegisterRepository;
 import com.erikjarquin.ventas.service.CashRegisterService;
 
+@Service
 public class CashRegisterImpl implements CashRegisterService {
     private final CashRegisterRepository repository;
     private final CashRegisterMapper mapper;

@@ -34,4 +34,16 @@ public class CategoryImpl implements CategoryService {
 
         return CategoryMapper.toDto(saved);
     }
+
+    @Override
+    public void delete(Long id){
+        CategoryEntity category = repository.findById(id).orElseThrow(() ->
+            new RuntimeException("Categoría no encontrada"));
+
+        if(category.getProducts() != null && !category.getProducts().isEmpty()){
+            throw new RuntimeException("No puedes eliminar una categoría con productos");
+        }
+
+        repository.deleteById(id);
+    }
 }

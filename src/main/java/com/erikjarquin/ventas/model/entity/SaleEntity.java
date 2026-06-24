@@ -53,11 +53,11 @@ public class SaleEntity {
     }
 
     //Getter y setter de saleDate
-    public LocalDateTime getDate(){
+    public LocalDateTime getSaleDate(){
         return saleDate;
     }
 
-    public void setDate(LocalDateTime saleDate){
+    public void setSaleDate(LocalDateTime saleDate){
         this.saleDate=saleDate;
     }
 

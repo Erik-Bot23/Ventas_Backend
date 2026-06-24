@@ -48,16 +48,23 @@ public class SaleImpl implements SaleService {
         cashRepository.findByActiveTrue().orElseThrow(() -> 
             new RuntimeException("No existe una caja abierta"));
 
+        //Validar que haya items
+        if(request.getItems() == null || request.getItems().isEmpty()){
+            throw new RuntimeException("La venta no tiene productos");
+        }
+
         SaleEntity sale = new SaleEntity();
-        sale.setDate(LocalDateTime.now());
+        sale.setSaleDate(LocalDateTime.now());
         sale.setPaymentMethod(request.getPaymentMethod());
 
         List<SaleDetailEntity> details = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
         for(SaleItemRequest item : request.getItems()){
-            ProductEntity product = productRepository.findById(item.getProductId()).orElseThrow();
+            ProductEntity product = productRepository.findById(item.getProductId()).orElseThrow(() -> 
+            new RuntimeException("Producto no encontrado: " + item.getProductId()));
 
+            //Validar que haya stock
             if(product.getStock() < item.getQuantity()){
                 throw new RuntimeException("Stock insuficiente: " + product.getName());
             }
@@ -76,68 +83,36 @@ public class SaleImpl implements SaleService {
             details.add(detail);
         }
 
-        if(request.getPaymentMethod() == PaymentMethod.CASH && request.getCashReceived().compareTo(total) < 0){
-            throw new RuntimeException("Pago insuficiente");
-        }
-        sale.setTotal(total);
-        BigDecimal change = request.getCashReceived().subtract(total);
         if(request.getPaymentMethod() == PaymentMethod.CASH){
+            if(request.getCashReceived() == null || request.getCashReceived().compareTo(total) < 0){
+                throw new RuntimeException("Pago insuficiente");
+            }
+        }
+
+        sale.setTotal(total);
+        BigDecimal change = BigDecimal.ZERO;
+
+        if(request.getPaymentMethod() == PaymentMethod.CASH){
+            change = request.getCashReceived().subtract(total);
             sale.setCashReceived(request.getCashReceived());
             sale.setChangeAmount(change);
         }
 
         sale.setDetails(details);
         SaleEntity saved = saleRepository.save(sale);
-        SaleResponse response = new SaleResponse();
-        response.setSaleId(saved.getId());
-        response.setTotal(total);
-        response.setChangeAmount(sale.getChangeAmount());
         
         return mapper.toResponse(saved);
     }
 
     @Override
     public List<SaleHistoryResponse> getSales(){
-        return saleRepository.findAll().stream().map(
-            /*sale -> {
-            SaleHistoryResponse dto = new SaleHistoryResponse();
-
-            dto.setId(sale.getId());
-            dto.setSaleDate(sale.getDate());
-            dto.setTotal(sale.getTotal());
-            dto.setPaymentMethod(sale.getPaymentMethod());
-            dto.setCashReceived(sale.getCashReceived());
-            dto.setChangeAmount(sale.getChangeAmount());
-
-            return dto;
-        }*/
-        mapper::toHistoryResponse
-        ).toList();
+        return saleRepository.findAll().stream().map(mapper::toHistoryResponse).toList();
     }
 
     @Override
     public SaleDetailHistoryResponse getSaleById(Long saleId){
         SaleEntity sale = saleRepository.findById(saleId).orElseThrow();
 
-        //SaleDetailHistoryResponse dto = new SaleDetailHistoryResponse();
-
-        /*dto.setSaleId(sale.getId());
-        dto.setSaleDate(sale.getDate());
-        dto.setTotal(sale.getTotal());
-        dto.setPaymentMethod(sale.getPaymentMethod());
-
-        List<SaleDetailResponse> details = sale.getDetails().stream().map(detail -> {
-            SaleDetailResponse item = new SaleDetailResponse();
-
-            item.setProduct(detail.getProduct().getName());
-            item.setQuantity(detail.getQuantity());
-            item.setUnitPrice(detail.getUnitPrice());
-            item.setSubtotal(detail.getSubTotal());
-
-            return item;
-        }).toList();
-
-        dto.setItems(details);*/
         return mapper.toDetailResponse(sale);
     }
 }

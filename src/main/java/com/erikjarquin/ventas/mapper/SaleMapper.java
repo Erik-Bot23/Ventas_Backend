@@ -2,6 +2,8 @@ package com.erikjarquin.ventas.mapper;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.erikjarquin.ventas.model.dto.SaleDetailHistoryResponse;
 import com.erikjarquin.ventas.model.dto.SaleDetailResponse;
 import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
@@ -9,6 +11,7 @@ import com.erikjarquin.ventas.model.dto.SaleResponse;
 import com.erikjarquin.ventas.model.entity.SaleDetailEntity;
 import com.erikjarquin.ventas.model.entity.SaleEntity;
 
+@Component
 public class SaleMapper {
     public SaleResponse toResponse(SaleEntity sale){
         SaleResponse response = new SaleResponse();
@@ -24,7 +27,7 @@ public class SaleMapper {
         SaleHistoryResponse response = new SaleHistoryResponse();
 
         response.setId(sale.getId());
-        response.setSaleDate(sale.getDate());
+        response.setSaleDate(sale.getSaleDate());
         response.setTotal(sale.getTotal());
         response.setPaymentMethod(sale.getPaymentMethod());
         response.setCashReceived(sale.getCashReceived());
@@ -37,10 +40,10 @@ public class SaleMapper {
         SaleDetailHistoryResponse response = new SaleDetailHistoryResponse();
 
         response.setSaleId(sale.getId());
-        response.setSaleDate(sale.getDate());
+        response.setSaleDate(sale.getSaleDate());
         response.setTotal(sale.getTotal());
         response.setPaymentMethod(sale.getPaymentMethod());
-        List<SaleDetailResponse> items = sale.getDetails().stream().map(this::toDetailItem).toList();
+        List<SaleDetailResponse> items = sale.getDetails() == null ? List.of() : sale.getDetails().stream().map(this::toDetailItem).toList();
         response.setItems(items);
 
         return response;
