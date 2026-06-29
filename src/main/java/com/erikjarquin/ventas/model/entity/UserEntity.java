@@ -28,7 +28,7 @@ public class UserEntity {
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id", nullable=false)
+    @JoinColumn(name = "role_id")
     private RoleEntity role;
 
     @Column(nullable = false)

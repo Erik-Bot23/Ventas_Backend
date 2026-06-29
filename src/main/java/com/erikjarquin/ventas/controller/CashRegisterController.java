@@ -13,7 +13,7 @@ import com.erikjarquin.ventas.model.dto.OpenCashRequest;
 import com.erikjarquin.ventas.service.CashRegisterService;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/cash")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CashRegisterController {
     private final CashRegisterService service;
