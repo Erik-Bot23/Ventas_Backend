@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import com.erikjarquin.ventas.model.dto.SaleRequest;
 import com.erikjarquin.ventas.model.dto.SaleResponse;
 import com.erikjarquin.ventas.service.SaleService;
 
+@PreAuthorize("hasAnyRole('ADMIN', 'CAJERO')")
 @RestController
 @RequestMapping("/api/sales")
 @CrossOrigin(origins = "http://localhost:4200")

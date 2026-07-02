@@ -18,6 +18,7 @@ import com.erikjarquin.ventas.model.dto.UpdateUserRequest;
 import com.erikjarquin.ventas.model.dto.UserDto;
 import com.erikjarquin.ventas.service.UserService;
 
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -27,13 +28,11 @@ public class UserController {
         this.service = service;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<UserDto> getAllUsers(){
         return service.getAllUsers();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public UserDto createUser(@RequestBody CreateUserRequest request){
         return service.createUser(request);

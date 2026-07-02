@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.erikjarquin.ventas.model.dto.ProductDto;
 import com.erikjarquin.ventas.service.ProductService;
 
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "http://localhost:4200")
