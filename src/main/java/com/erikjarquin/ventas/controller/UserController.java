@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,11 +27,13 @@ public class UserController {
         this.service = service;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<UserDto> getAllUsers(){
         return service.getAllUsers();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public UserDto createUser(@RequestBody CreateUserRequest request){
         return service.createUser(request);

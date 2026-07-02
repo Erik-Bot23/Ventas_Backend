@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ public class ProductController {
         this.service = service;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ALMACENISTA')")
     @GetMapping
     public List<ProductDto> getProducts(@RequestParam(required = false) String category){ //¿Long categoryId?
         if (category != null) {
