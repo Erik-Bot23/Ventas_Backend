@@ -13,7 +13,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "mi_clave_secreta_super_segura";
+    private static final String SECRET_KEY = "1234567890123456789012345678901234567890123456789012345678901234";
 
     public String generateToken(UserEntity user){
         return Jwts.builder().setSubject(user.getEmail())
@@ -23,7 +23,7 @@ public class JwtUtil {
     }
 
     public String extractEmail(String token){
-        return getClaims(token).get("role", String.class);
+        return getClaims(token).getSubject();
     }
 
     private Claims getClaims(String token){

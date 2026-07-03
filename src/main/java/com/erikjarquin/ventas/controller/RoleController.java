@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.erikjarquin.ventas.model.dto.RoleDto;
 import com.erikjarquin.ventas.service.RoleService;
 
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/roles")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -24,6 +26,7 @@ public class RoleController {
         this.service=service;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<RoleDto> getAllRoles(){
         return service.getAllRoles();
@@ -34,7 +37,7 @@ public class RoleController {
         return service.save(dto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
         service.delete(id);
     }

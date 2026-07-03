@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,6 +18,7 @@ import com.erikjarquin.ventas.model.dto.UpdateUserRequest;
 import com.erikjarquin.ventas.model.dto.UserDto;
 import com.erikjarquin.ventas.service.UserService;
 
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

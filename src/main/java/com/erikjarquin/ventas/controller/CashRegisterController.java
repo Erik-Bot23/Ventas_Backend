@@ -1,5 +1,6 @@
 package com.erikjarquin.ventas.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import com.erikjarquin.ventas.model.dto.CloseCashRequest;
 import com.erikjarquin.ventas.model.dto.OpenCashRequest;
 import com.erikjarquin.ventas.service.CashRegisterService;
 
+@PreAuthorize("hasAnyRole('ADMIN', 'CAJERO')")
 @RestController
 @RequestMapping("/api/cash")
 @CrossOrigin(origins = "http://localhost:4200")
