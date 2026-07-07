@@ -43,7 +43,6 @@ public class AuthImpl implements AuthService {
                         user.getId(),
                         user.getName(),
                         user.getEmail(),
-                        //List.of(user.getRole().getName()),
                         user.getRole().getName(),
                         token
                     ); 
