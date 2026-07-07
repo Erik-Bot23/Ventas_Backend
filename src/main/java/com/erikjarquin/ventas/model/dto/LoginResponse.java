@@ -7,15 +7,16 @@ public class LoginResponse {
     private Long id;
     private String name;
     private String email;
-    private List<String> roles;
+    //private List<String> roles;
+    private String role;
     private String token;
 
-    public LoginResponse(boolean success, Long id, String name, String email, List<String> roles, String token){
+    public LoginResponse(boolean success, Long id, String name, String email, String role, String token){
         this.success=success;
         this.id=id;
         this.name=name;
         this.email=email;
-        this.roles = roles;
+        this.role = role;
         this.token=token;
     }
 
@@ -51,12 +52,12 @@ public class LoginResponse {
         this.email=email;
     }
 
-    public List<String> getRoles(){
-        return roles;
+    public String getRoles(){
+        return role;
     }
 
-    public void setRoles(List<String> roles){
-        this.roles=roles;
+    public void setRoles(String role){
+        this.role=role;
     }
 
     public String getToken(){

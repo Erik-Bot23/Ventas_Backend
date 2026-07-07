@@ -31,7 +31,6 @@ public class ProductController {
         this.service = service;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'ALMACENISTA')")
     @GetMapping
     public List<ProductDto> getProducts(@RequestParam(required = false) String category){ //¿Long categoryId?
         if (category != null) {

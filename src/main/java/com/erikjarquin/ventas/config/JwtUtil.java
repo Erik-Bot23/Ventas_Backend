@@ -30,4 +30,13 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes())
                 .build().parseClaimsJws(token).getBody();
     }
+
+    public boolean isTokenValid(String token){
+        try{
+            getClaims(token);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
 }

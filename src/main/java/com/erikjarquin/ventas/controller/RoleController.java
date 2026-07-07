@@ -26,7 +26,6 @@ public class RoleController {
         this.service=service;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<RoleDto> getAllRoles(){
         return service.getAllRoles();
