@@ -1,5 +1,7 @@
 package com.erikjarquin.ventas.config;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -14,10 +16,15 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
     private static final String SECRET_KEY = "1234567890123456789012345678901234567890123456789012345678901234";
+    /*private Key getSigningKey(){
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    }
+    */
+
 
     public String generateToken(UserEntity user){
         return Jwts.builder().setSubject(user.getEmail())
-                .claim("role", user.getRole().getName())
+                .claim("role", user.getRole().getName()) //Redundante
                 .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 *5))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256).compact();
     }
@@ -27,7 +34,7 @@ public class JwtUtil {
     }
 
     private Claims getClaims(String token){
-        return Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes())
+        return Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes()) //.setSignningKey(getSigningKey())
                 .build().parseClaimsJws(token).getBody();
     }
 

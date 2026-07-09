@@ -1,6 +1,5 @@
 package com.erikjarquin.ventas.model.dto;
 
-import java.util.List;
 
 public class LoginResponse {
     private boolean success;

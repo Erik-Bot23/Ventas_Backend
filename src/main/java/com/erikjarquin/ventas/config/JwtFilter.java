@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.erikjarquin.ventas.model.entity.UserEntity;
 import com.erikjarquin.ventas.repository.UserRepository;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,23 +39,29 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);
-        String email = jwtUtil.extractEmail(token);
+        try {
+            String token = authHeader.substring(7);
+            String email = jwtUtil.extractEmail(token);
 
-        if(jwtUtil.isTokenValid(token)){
-            if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                UserEntity user = userRepository.findByEmail(email).orElse(null);
+            if(jwtUtil.isTokenValid(token)){
+                if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                    UserEntity user = userRepository.findByEmailWithRole(email).orElse(null);//Redundante 
 
-                if(user != null){
-                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getName());
+                    if(user != null){
+                        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getName());
 
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, List.of(authority));
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, List.of(authority));
 
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
                 }
             }
+        } catch(ExpiredJwtException e) {
+            SecurityContextHolder.clearContext();
+            filterChain.doFilter(request, response);
+            return;
         }
-        
+
         filterChain.doFilter(request, response);
     }
 }

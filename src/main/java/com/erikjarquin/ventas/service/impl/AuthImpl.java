@@ -1,6 +1,5 @@
 package com.erikjarquin.ventas.service.impl;
 
-import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ public class AuthImpl implements AuthService {
     @Override
     public LoginResponse login(LoginRequest request){
 
-        return repo.findByEmail(request.getEmail())
+        return repo.findByEmailWithRole(request.getEmail())
                 .filter(UserEntity::isActive)
                 .filter(user -> passwordEncoder.matches(
                     request.getPassword(),
