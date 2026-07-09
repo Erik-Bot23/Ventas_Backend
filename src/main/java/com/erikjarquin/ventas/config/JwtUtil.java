@@ -1,7 +1,5 @@
 package com.erikjarquin.ventas.config;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -20,7 +18,6 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
     */
-
 
     public String generateToken(UserEntity user){
         return Jwts.builder().setSubject(user.getEmail())
