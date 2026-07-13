@@ -7,6 +7,8 @@ public class SaleResponse {
 
     private BigDecimal total;
 
+    private BigDecimal cashReceived;
+
     private BigDecimal changeAmount;
 
     public SaleResponse(){}
@@ -36,5 +38,14 @@ public class SaleResponse {
 
     public void setChangeAmount(BigDecimal changeAmount){
         this.changeAmount=changeAmount;
+    }
+
+    //Getter y setter de cashReceived
+    public BigDecimal getCashReceived(){
+        return cashReceived;
+    }
+
+    public void setCashReceived(BigDecimal cashReceived){
+        this.cashReceived=cashReceived;
     }
 }

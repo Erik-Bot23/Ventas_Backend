@@ -18,6 +18,7 @@ public class SaleMapper {
 
         response.setSaleId(sale.getId());
         response.setTotal(sale.getTotal());
+        response.setCashReceived(sale.getCashReceived());
         response.setChangeAmount(sale.getChangeAmount());
 
         return response;

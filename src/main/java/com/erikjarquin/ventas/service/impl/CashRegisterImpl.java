@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.erikjarquin.ventas.exceptions.CashException;
 import com.erikjarquin.ventas.mapper.CashRegisterMapper;
 import com.erikjarquin.ventas.model.dto.CashResponse;
 import com.erikjarquin.ventas.model.dto.CloseCashRequest;
@@ -56,7 +57,7 @@ public class CashRegisterImpl implements CashRegisterService {
     @Override
     public CashResponse getActiveCash(){
         CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() ->
-            new RuntimeException("No existe la caja abierta"));
+            new CashException("No existe la caja abierta"));
 
         return mapper.toResponse(cash);
     }
