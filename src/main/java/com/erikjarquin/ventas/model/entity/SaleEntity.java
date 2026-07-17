@@ -13,6 +13,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -40,6 +42,10 @@ public class SaleEntity {
         orphanRemoval = true
     )
     private List<SaleDetailEntity> details;
+
+    @ManyToOne
+    @JoinColumn(name = "cash_register_id")
+    private CashRegisterEntity cashRegister;
 
     public SaleEntity(){}
 
@@ -104,6 +110,15 @@ public class SaleEntity {
 
     public void setDetails(List<SaleDetailEntity> details){
         this.details=details;
+    }
+
+    //Getter y setter de CashRegister
+    public CashRegisterEntity getCashRegister(){
+        return cashRegister;
+    }
+
+    public void setCashRegister(CashRegisterEntity cashRegister){
+        this.cashRegister=cashRegister;
     }
 
 }

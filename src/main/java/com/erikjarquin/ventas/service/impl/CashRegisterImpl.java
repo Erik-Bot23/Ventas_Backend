@@ -1,6 +1,8 @@
 package com.erikjarquin.ventas.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -10,19 +12,24 @@ import com.erikjarquin.ventas.model.dto.CashResponse;
 import com.erikjarquin.ventas.model.dto.CloseCashRequest;
 import com.erikjarquin.ventas.model.dto.OpenCashRequest;
 import com.erikjarquin.ventas.model.entity.CashRegisterEntity;
+import com.erikjarquin.ventas.model.entity.SaleEntity;
 import com.erikjarquin.ventas.repository.CashRegisterRepository;
+import com.erikjarquin.ventas.repository.SaleRepository;
 import com.erikjarquin.ventas.service.CashRegisterService;
 
 @Service
 public class CashRegisterImpl implements CashRegisterService {
     private final CashRegisterRepository repository;
     private final CashRegisterMapper mapper;
+    private final SaleRepository saleRepository;
 
     public CashRegisterImpl(
         CashRegisterRepository repository,
-        CashRegisterMapper mapper){
+        CashRegisterMapper mapper,
+        SaleRepository saleRepository){
         this.repository = repository;
         this.mapper = mapper;
+        this.saleRepository=saleRepository;
     }
 
     @Override
@@ -32,6 +39,15 @@ public class CashRegisterImpl implements CashRegisterService {
         });
 
         CashRegisterEntity cash = new CashRegisterEntity();
+
+        //Inicializar para evitar valores null
+        cash.setCashSales(BigDecimal.ZERO);
+        cash.setDebitSales(BigDecimal.ZERO);
+        cash.setCreditSales(BigDecimal.ZERO);
+        cash.setTotalSales(BigDecimal.ZERO);
+        cash.setExpectedAmount(BigDecimal.ZERO);
+        cash.setDifference(BigDecimal.ZERO);
+        cash.setTotalTickets(0);
 
         cash.setOpenedAt(LocalDateTime.now());
         cash.setOpeningAmount(request.getOpeningAmount());
@@ -46,8 +62,50 @@ public class CashRegisterImpl implements CashRegisterService {
         CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() -> 
             new RuntimeException("No existe caja abierta"));
 
+        List<SaleEntity> sales = saleRepository.findByCashRegister(cash);
+
+        BigDecimal cashSales = BigDecimal.ZERO;
+        BigDecimal debitSales = BigDecimal.ZERO;
+        BigDecimal creditSales = BigDecimal.ZERO;
+
+        for(SaleEntity sale : sales){
+            switch(sale.getPaymentMethod()){
+                case CASH -> cashSales = cashSales.add(sale.getTotal());
+
+                case DEBIT -> debitSales = debitSales.add(sale.getTotal());
+
+                case CREDIT -> creditSales = creditSales.add(sale.getTotal());
+            }
+        }
+
+        //Total vendido
+        BigDecimal totalSales = cashSales.add(debitSales).add(creditSales);
+
+        //Tickets
+        int totalTickets = sales.size();
+
+        BigDecimal expectedAmount = cash.getOpeningAmount().add(cashSales);
+
+        //Diferencia
+        BigDecimal countedAmount = request.getClosingAmount();
+
+        BigDecimal difference = countedAmount.subtract(expectedAmount);
+
+        //Guardar todo
+        cash.setCountedAmount(countedAmount);
+
+        cash.setCashSales(cashSales);
+        cash.setDebitSales(debitSales);
+        cash.setCreditSales(creditSales);
+
+        cash.setTotalSales(totalSales);
+
+        cash.setExpectedAmount(expectedAmount);
+        cash.setDifference(difference);
+
+        cash.setTotalTickets(totalTickets);
+
         cash.setClosedAt(LocalDateTime.now());
-        cash.setClosingAmount(request.getClosingAmount());
         cash.setActive(false);
         repository.save(cash);
 

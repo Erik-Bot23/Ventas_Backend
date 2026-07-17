@@ -14,6 +14,7 @@ import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
 import com.erikjarquin.ventas.model.dto.SaleItemRequest;
 import com.erikjarquin.ventas.model.dto.SaleRequest;
 import com.erikjarquin.ventas.model.dto.SaleResponse;
+import com.erikjarquin.ventas.model.entity.CashRegisterEntity;
 import com.erikjarquin.ventas.model.entity.ProductEntity;
 import com.erikjarquin.ventas.model.entity.SaleDetailEntity;
 import com.erikjarquin.ventas.model.entity.SaleEntity;
@@ -45,7 +46,7 @@ public class SaleImpl implements SaleService {
 
     @Override 
     public SaleResponse processSale(SaleRequest request){
-        cashRepository.findByActiveTrue().orElseThrow(() -> 
+        CashRegisterEntity cash = cashRepository.findByActiveTrue().orElseThrow(() -> 
             new RuntimeException("No existe una caja abierta"));
 
         //Validar que haya items
@@ -56,6 +57,7 @@ public class SaleImpl implements SaleService {
         SaleEntity sale = new SaleEntity();
         sale.setSaleDate(LocalDateTime.now());
         sale.setPaymentMethod(request.getPaymentMethod());
+        sale.setCashRegister(cash);
 
         List<SaleDetailEntity> details = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
