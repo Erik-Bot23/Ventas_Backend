@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erikjarquin.ventas.model.dto.CashResponse;
+import com.erikjarquin.ventas.model.dto.CashSummaryResponse;
 import com.erikjarquin.ventas.model.dto.CloseCashRequest;
 import com.erikjarquin.ventas.model.dto.OpenCashRequest;
 import com.erikjarquin.ventas.service.CashRegisterService;
@@ -22,6 +23,11 @@ public class CashRegisterController {
 
     public CashRegisterController(CashRegisterService service){
         this.service=service;
+    }
+
+    @GetMapping("/summary")
+    public CashSummaryResponse getSummary(){
+        return service.getSummary();
     }
 
     @PostMapping("/open")

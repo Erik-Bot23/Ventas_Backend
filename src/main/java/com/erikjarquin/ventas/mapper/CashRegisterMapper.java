@@ -18,7 +18,7 @@ public class CashRegisterMapper {
         response.setOpenedAt(cash.getOpenedAt());
         response.setClosedAt(cash.getClosedAt());
         response.setOpeningAmount(cash.getOpeningAmount());
-        response.setClosingAmount(cash.getCountedAmount());
+        response.setClosingAmount(cash.getCountedAmount()); //Dinero contado por el cajero
         response.setActive(cash.getActive());
         response.setExpectedAmount(cash.getExpectedAmount());
         response.setDifference(cash.getDifference());

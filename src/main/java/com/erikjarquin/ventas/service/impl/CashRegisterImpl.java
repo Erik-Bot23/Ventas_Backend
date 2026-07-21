@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.erikjarquin.ventas.exceptions.CashException;
 import com.erikjarquin.ventas.mapper.CashRegisterMapper;
 import com.erikjarquin.ventas.model.dto.CashResponse;
+import com.erikjarquin.ventas.model.dto.CashSummaryResponse;
 import com.erikjarquin.ventas.model.dto.CloseCashRequest;
 import com.erikjarquin.ventas.model.dto.OpenCashRequest;
 import com.erikjarquin.ventas.model.entity.CashRegisterEntity;
@@ -35,7 +36,7 @@ public class CashRegisterImpl implements CashRegisterService {
     @Override
     public CashResponse open(OpenCashRequest request){
         repository.findByActiveTrue().ifPresent(c -> {
-            throw new RuntimeException("Ta existe una caja abierta");
+            throw new RuntimeException("Ya existe una caja abierta");
         });
 
         CashRegisterEntity cash = new CashRegisterEntity();
@@ -84,6 +85,7 @@ public class CashRegisterImpl implements CashRegisterService {
         //Tickets
         int totalTickets = sales.size();
 
+        //Monto esperado
         BigDecimal expectedAmount = cash.getOpeningAmount().add(cashSales);
 
         //Diferencia
@@ -118,5 +120,42 @@ public class CashRegisterImpl implements CashRegisterService {
             new CashException("No existe la caja abierta"));
 
         return mapper.toResponse(cash);
+    }
+
+    @Override
+    public CashSummaryResponse getSummary(){
+        CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() ->
+            new RuntimeException("No existe caja abierta"));
+
+        List<SaleEntity> sales = saleRepository.findByCashRegister(cash);
+
+        BigDecimal cashSales = BigDecimal.ZERO;
+        BigDecimal debitSales = BigDecimal.ZERO;
+        BigDecimal creditSales = BigDecimal.ZERO;
+
+        for(SaleEntity sale : sales){
+            switch(sale.getPaymentMethod()){
+                case CASH -> cashSales = cashSales.add(sale.getTotal());
+
+                case DEBIT -> debitSales = debitSales.add(sale.getTotal());
+
+                case CREDIT -> creditSales = creditSales.add(sale.getTotal());
+            }
+        }
+
+        BigDecimal totalSales = cashSales.add(debitSales).add(creditSales);
+        BigDecimal expectedAmount = cash.getOpeningAmount().add(cashSales);
+
+        CashSummaryResponse response = new CashSummaryResponse();
+        response.setCashId(cash.getId());
+        response.setOpeningAmount(cash.getOpeningAmount());
+        response.setCashSales(cashSales);
+        response.setDebitSales(debitSales);
+        response.setCreditSales(creditSales);
+        response.setTotalSales(totalSales);
+        response.setExpectedAmount(expectedAmount);
+        response.setTotalTickets(sales.size());
+
+        return response;
     }
 }
