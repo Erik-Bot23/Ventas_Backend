@@ -40,7 +40,6 @@ public class CashRegisterController {
         return service.close(request);
     }
 
-
     @GetMapping("/active")
     public CashResponse getActiveCash(){
         return service.getActiveCash();

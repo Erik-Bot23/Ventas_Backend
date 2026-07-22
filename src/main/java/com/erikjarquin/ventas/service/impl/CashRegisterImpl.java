@@ -127,6 +127,10 @@ public class CashRegisterImpl implements CashRegisterService {
         CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() ->
             new RuntimeException("No existe caja abierta"));
 
+        return calculateSummary(cash);
+    }
+
+    private CashSummaryResponse calculateSummary(CashRegisterEntity cash){
         List<SaleEntity> sales = saleRepository.findByCashRegister(cash);
 
         BigDecimal cashSales = BigDecimal.ZERO;
