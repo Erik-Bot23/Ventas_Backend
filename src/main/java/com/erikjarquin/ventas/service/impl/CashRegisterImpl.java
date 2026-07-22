@@ -63,50 +63,21 @@ public class CashRegisterImpl implements CashRegisterService {
         CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() -> 
             new RuntimeException("No existe caja abierta"));
 
-        List<SaleEntity> sales = saleRepository.findByCashRegister(cash);
-
-        BigDecimal cashSales = BigDecimal.ZERO;
-        BigDecimal debitSales = BigDecimal.ZERO;
-        BigDecimal creditSales = BigDecimal.ZERO;
-
-        for(SaleEntity sale : sales){
-            switch(sale.getPaymentMethod()){
-                case CASH -> cashSales = cashSales.add(sale.getTotal());
-
-                case DEBIT -> debitSales = debitSales.add(sale.getTotal());
-
-                case CREDIT -> creditSales = creditSales.add(sale.getTotal());
-            }
-        }
-
-        //Total vendido
-        BigDecimal totalSales = cashSales.add(debitSales).add(creditSales);
-
-        //Tickets
-        int totalTickets = sales.size();
-
-        //Monto esperado
-        BigDecimal expectedAmount = cash.getOpeningAmount().add(cashSales);
+        CashSummaryResponse summary = calculateSummary(cash);
 
         //Diferencia
         BigDecimal countedAmount = request.getClosingAmount();
-
-        BigDecimal difference = countedAmount.subtract(expectedAmount);
+        BigDecimal difference = countedAmount.subtract(summary.getExpectedAmount());
 
         //Guardar todo
         cash.setCountedAmount(countedAmount);
-
-        cash.setCashSales(cashSales);
-        cash.setDebitSales(debitSales);
-        cash.setCreditSales(creditSales);
-
-        cash.setTotalSales(totalSales);
-
-        cash.setExpectedAmount(expectedAmount);
+        cash.setCashSales(summary.getCashSales());
+        cash.setDebitSales(summary.getDebitSales());
+        cash.setCreditSales(summary.getCreditSales());
+        cash.setTotalSales(summary.getTotalSales());
+        cash.setExpectedAmount(summary.getExpectedAmount());
         cash.setDifference(difference);
-
-        cash.setTotalTickets(totalTickets);
-
+        cash.setTotalTickets(summary.getTotalTickets());
         cash.setClosedAt(LocalDateTime.now());
         cash.setActive(false);
         repository.save(cash);
