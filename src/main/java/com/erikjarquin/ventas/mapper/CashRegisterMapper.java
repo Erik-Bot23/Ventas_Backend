@@ -2,7 +2,7 @@ package com.erikjarquin.ventas.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.erikjarquin.ventas.model.dto.CashResponse;
+import com.erikjarquin.ventas.model.dto.Cash.CashResponse;
 import com.erikjarquin.ventas.model.entity.CashRegisterEntity;
 
 @Component

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.erikjarquin.ventas.exceptions.CashException;
 import com.erikjarquin.ventas.mapper.CashRegisterMapper;
-import com.erikjarquin.ventas.model.dto.CashResponse;
-import com.erikjarquin.ventas.model.dto.CashSummaryResponse;
-import com.erikjarquin.ventas.model.dto.CloseCashRequest;
-import com.erikjarquin.ventas.model.dto.OpenCashRequest;
+import com.erikjarquin.ventas.model.dto.Cash.CashResponse;
+import com.erikjarquin.ventas.model.dto.Cash.CashSummaryResponse;
+import com.erikjarquin.ventas.model.dto.Cash.CloseCashRequest;
+import com.erikjarquin.ventas.model.dto.Cash.OpenCashRequest;
 import com.erikjarquin.ventas.model.entity.CashRegisterEntity;
 import com.erikjarquin.ventas.model.entity.SaleEntity;
 import com.erikjarquin.ventas.repository.CashRegisterRepository;

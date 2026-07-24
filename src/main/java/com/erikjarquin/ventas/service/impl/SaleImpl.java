@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.erikjarquin.ventas.mapper.SaleMapper;
-import com.erikjarquin.ventas.model.dto.SaleDetailHistoryResponse;
-import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
-import com.erikjarquin.ventas.model.dto.SaleItemRequest;
-import com.erikjarquin.ventas.model.dto.SaleRequest;
-import com.erikjarquin.ventas.model.dto.SaleResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleDetailHistoryResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleHistoryResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleItemRequest;
+import com.erikjarquin.ventas.model.dto.Sale.SaleRequest;
+import com.erikjarquin.ventas.model.dto.Sale.SaleResponse;
 import com.erikjarquin.ventas.model.entity.CashRegisterEntity;
 import com.erikjarquin.ventas.model.entity.ProductEntity;
 import com.erikjarquin.ventas.model.entity.SaleDetailEntity;

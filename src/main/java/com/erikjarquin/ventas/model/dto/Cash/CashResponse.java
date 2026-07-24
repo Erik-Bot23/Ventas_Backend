@@ -1,4 +1,4 @@
-package com.erikjarquin.ventas.model.dto;
+package com.erikjarquin.ventas.model.dto.Cash;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

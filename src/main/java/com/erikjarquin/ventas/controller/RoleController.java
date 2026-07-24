@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.erikjarquin.ventas.model.dto.RoleDto;
+import com.erikjarquin.ventas.model.dto.UserRole.RoleDto;
 import com.erikjarquin.ventas.service.RoleService;
 
 @PreAuthorize("hasRole('ADMIN')")

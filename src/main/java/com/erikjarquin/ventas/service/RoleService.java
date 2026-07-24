@@ -2,7 +2,7 @@ package com.erikjarquin.ventas.service;
 
 import java.util.List;
 
-import com.erikjarquin.ventas.model.dto.RoleDto;
+import com.erikjarquin.ventas.model.dto.UserRole.RoleDto;
 
 public interface  RoleService {
     List<RoleDto> getAllRoles();

@@ -1,5 +1,7 @@
 package com.erikjarquin.ventas.model.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,6 +35,12 @@ public class UserEntity {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiration")
+    private LocalDateTime resetTokenExpiration;
 
     //getter y setter de id
     public Long getId(){
@@ -87,4 +95,23 @@ public class UserEntity {
     public void setActive(boolean active){
         this.active=active;
     }
+
+    //Getter y setter de resetToken
+    public String getResetToken(){
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken){
+        this.resetToken=resetToken;
+    }
+
+    //Getter y setter de resetTokenExpiration
+    public LocalDateTime getResetTokenExpiration(){
+        return resetTokenExpiration;
+    }
+
+    public void setResetTokenExpiration(LocalDateTime resetTokenExpiration){
+        this.resetTokenExpiration=resetTokenExpiration;
+    }
+
 }

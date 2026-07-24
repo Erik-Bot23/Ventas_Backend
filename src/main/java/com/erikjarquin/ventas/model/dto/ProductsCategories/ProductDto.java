@@ -1,4 +1,4 @@
-package com.erikjarquin.ventas.model.dto;
+package com.erikjarquin.ventas.model.dto.ProductsCategories;
 
 import java.math.BigDecimal;
 

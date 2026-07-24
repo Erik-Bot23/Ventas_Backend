@@ -18,5 +18,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
                     WHERE u.email = :email
         """)
     
-        Optional<UserEntity> findByEmailWithRole(@Param("email") String email);
+    Optional<UserEntity> findByEmailWithRole(@Param("email") String email);
+    Optional<UserEntity> findByResetToken(String resetToken);
+    
 }

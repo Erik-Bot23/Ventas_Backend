@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.erikjarquin.ventas.mapper.RoleMapper;
-import com.erikjarquin.ventas.model.dto.RoleDto;
+import com.erikjarquin.ventas.model.dto.UserRole.RoleDto;
 import com.erikjarquin.ventas.model.entity.RoleEntity;
 import com.erikjarquin.ventas.repository.RoleRepository;
 import com.erikjarquin.ventas.service.RoleService;

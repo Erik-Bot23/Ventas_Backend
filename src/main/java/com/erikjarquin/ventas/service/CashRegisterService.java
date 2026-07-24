@@ -1,9 +1,9 @@
 package com.erikjarquin.ventas.service;
 
-import com.erikjarquin.ventas.model.dto.CashResponse;
-import com.erikjarquin.ventas.model.dto.CashSummaryResponse;
-import com.erikjarquin.ventas.model.dto.CloseCashRequest;
-import com.erikjarquin.ventas.model.dto.OpenCashRequest;
+import com.erikjarquin.ventas.model.dto.Cash.CashResponse;
+import com.erikjarquin.ventas.model.dto.Cash.CashSummaryResponse;
+import com.erikjarquin.ventas.model.dto.Cash.CloseCashRequest;
+import com.erikjarquin.ventas.model.dto.Cash.OpenCashRequest;
 
 public interface  CashRegisterService {
     CashResponse open(OpenCashRequest request);

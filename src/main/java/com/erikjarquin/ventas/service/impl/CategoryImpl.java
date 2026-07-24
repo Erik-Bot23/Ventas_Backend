@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.erikjarquin.ventas.mapper.CategoryMapper;
-import com.erikjarquin.ventas.model.dto.CategoryDto;
+import com.erikjarquin.ventas.model.dto.ProductsCategories.CategoryDto;
 import com.erikjarquin.ventas.model.entity.CategoryEntity;
 import com.erikjarquin.ventas.repository.CategoryRepository;
 import com.erikjarquin.ventas.service.CategoryService;

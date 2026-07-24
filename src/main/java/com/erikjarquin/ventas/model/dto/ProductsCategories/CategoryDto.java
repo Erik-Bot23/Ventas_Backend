@@ -1,17 +1,17 @@
-package com.erikjarquin.ventas.model.dto;
+package com.erikjarquin.ventas.model.dto.ProductsCategories;
 
-public class RoleDto {
+public class CategoryDto {
     private Long id;
     private String name;
 
-    public RoleDto(){}
+    public CategoryDto(){}
 
-    public RoleDto(Long id, String name){
+    public CategoryDto(Long id, String name){
         this.id=id;
         this.name=name;
     }
 
-    //Getter y setter de id
+    //Getters y setters de id
     public Long getId(){
         return id;
     }
@@ -20,7 +20,7 @@ public class RoleDto {
         this.id=id;
     }
 
-    //Getter y setter de name
+    //Getters y setter de name
     public String getName(){
         return name;
     }

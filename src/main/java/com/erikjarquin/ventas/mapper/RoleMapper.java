@@ -1,6 +1,6 @@
 package com.erikjarquin.ventas.mapper;
 
-import com.erikjarquin.ventas.model.dto.RoleDto;
+import com.erikjarquin.ventas.model.dto.UserRole.RoleDto;
 import com.erikjarquin.ventas.model.entity.RoleEntity;
 
 public class RoleMapper {

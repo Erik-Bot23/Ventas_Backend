@@ -1,29 +1,37 @@
 package com.erikjarquin.ventas.service.impl;
 
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.erikjarquin.ventas.config.JwtUtil;
-import com.erikjarquin.ventas.model.dto.LoginRequest;
-import com.erikjarquin.ventas.model.dto.LoginResponse;
+import com.erikjarquin.ventas.model.dto.Login.LoginRequest;
+import com.erikjarquin.ventas.model.dto.Login.LoginResponse;
+import com.erikjarquin.ventas.model.dto.ResetPassword.ChangePasswordRequest;
 import com.erikjarquin.ventas.model.entity.UserEntity;
 import com.erikjarquin.ventas.repository.UserRepository;
 import com.erikjarquin.ventas.service.AuthService;
+import com.erikjarquin.ventas.service.EmailService;
 
 @Service
 public class AuthImpl implements AuthService {
     private final UserRepository repo;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     public AuthImpl(
         UserRepository repo, 
         PasswordEncoder passwordEncoder,
-        JwtUtil jwtUtil){
+        JwtUtil jwtUtil,
+        EmailService emailService){
         this.repo=repo;
         this.passwordEncoder=passwordEncoder;
         this.jwtUtil=jwtUtil;
+        this.emailService=emailService;
     }
 
     @Override
@@ -56,5 +64,52 @@ public class AuthImpl implements AuthService {
                         null
                     )
                 );
+    }
+
+    @Override
+    public void forgotPassword(String email){
+        UserEntity user = repo.findByEmail(email).orElseThrow(() ->
+            new RuntimeException("Usuario no encontrado"));
+
+        String token = UUID.randomUUID().toString();
+
+        user.setResetToken(token);
+        user.setResetTokenExpiration(LocalDateTime.now().plusHours(1));
+
+        repo.save(user);
+
+        String link = "http://localhost:4200/reset-password?token=" + token;
+
+        emailService.sendPasswordRecoveryEmail(user.getEmail(), link);
+
+    }
+
+    @Override
+    public void resetPassword(String token, String newPassword){
+        UserEntity user = repo.findByResetToken(token).orElseThrow(() ->
+            new RuntimeException("Token inválido"));
+
+        if(user.getResetTokenExpiration().isBefore(LocalDateTime.now())){
+            throw new RuntimeException("Token expirado");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null);
+        user.setResetTokenExpiration(null);
+
+        repo.save(user);
+    }
+
+    @Override
+    public void changePassword(String email, ChangePasswordRequest request){
+        UserEntity user = repo.findByEmail(email).orElseThrow();
+
+        if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())){
+            throw new RuntimeException("Contraseña actual incorrecta");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        repo.save(user);
     }
 }

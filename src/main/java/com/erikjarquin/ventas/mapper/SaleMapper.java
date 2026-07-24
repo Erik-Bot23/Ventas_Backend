@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.erikjarquin.ventas.model.dto.SaleDetailHistoryResponse;
-import com.erikjarquin.ventas.model.dto.SaleDetailResponse;
-import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
-import com.erikjarquin.ventas.model.dto.SaleResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleDetailHistoryResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleDetailResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleHistoryResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleResponse;
 import com.erikjarquin.ventas.model.entity.SaleDetailEntity;
 import com.erikjarquin.ventas.model.entity.SaleEntity;
 

@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.erikjarquin.ventas.model.dto.SaleDetailHistoryResponse;
-import com.erikjarquin.ventas.model.dto.SaleHistoryResponse;
-import com.erikjarquin.ventas.model.dto.SaleRequest;
-import com.erikjarquin.ventas.model.dto.SaleResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleDetailHistoryResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleHistoryResponse;
+import com.erikjarquin.ventas.model.dto.Sale.SaleRequest;
+import com.erikjarquin.ventas.model.dto.Sale.SaleResponse;
 import com.erikjarquin.ventas.service.SaleService;
 
 @PreAuthorize("hasAnyRole('ADMIN', 'CAJERO')")
