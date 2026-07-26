@@ -4,10 +4,12 @@ package com.erikjarquin.ventas.service.impl;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.erikjarquin.ventas.config.JwtUtil;
+import com.erikjarquin.ventas.exceptions.UserException;
 import com.erikjarquin.ventas.model.dto.Login.LoginRequest;
 import com.erikjarquin.ventas.model.dto.Login.LoginResponse;
 import com.erikjarquin.ventas.model.dto.ResetPassword.ChangePasswordRequest;
@@ -22,6 +24,9 @@ public class AuthImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     public AuthImpl(
         UserRepository repo, 
@@ -69,7 +74,7 @@ public class AuthImpl implements AuthService {
     @Override
     public void forgotPassword(String email){
         UserEntity user = repo.findByEmail(email).orElseThrow(() ->
-            new RuntimeException("Usuario no encontrado"));
+            new UserException("No existe una cuenta registrada con ese correo electrónico."));
 
         String token = UUID.randomUUID().toString();
 
@@ -78,7 +83,7 @@ public class AuthImpl implements AuthService {
 
         repo.save(user);
 
-        String link = "http://localhost:4200/reset-password?token=" + token;
+        String link = frontendUrl + "/reset-password?token=" + token;
 
         emailService.sendPasswordRecoveryEmail(user.getEmail(), link);
 

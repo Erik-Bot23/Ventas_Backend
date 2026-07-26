@@ -15,6 +15,7 @@ public class EmailService {
     public void sendPasswordRecoveryEmail(String recipient, String link){
         SimpleMailMessage message = new SimpleMailMessage();
 
+        message.setFrom("soportetiav@gmail.com");
         message.setTo(recipient);
         message.setSubject("Recuperación de contraseña");
         message.setText("Da clic en el siguiente enlace:\n\n" + link);

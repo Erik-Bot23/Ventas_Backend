@@ -27,7 +27,7 @@ public class AdminBootstrap implements CommandLineRunner {
 
     @Override
     public void run(String... args){
-        String adminEmail = "erik@iracar-technologies.com";
+        String adminEmail = "18jarquinsanchezerik1a@gmail.com";
         boolean exists = userRepository.findByEmail(adminEmail).isPresent();
 
         if(!exists){

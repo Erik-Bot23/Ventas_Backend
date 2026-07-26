@@ -22,16 +22,19 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   
   mail:
-    host: smtp.office365.com
+    host: smtp.gmail.com
     port: 587
-    username: erik@iracar-technologies.com
-    password: Rajkire16.
+    username: soportetiav@gmail.com
+    password: tucn dfbu qspk zzki
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+  
+app:
+  frontend-url: http://localhost:4200
 
 server:
   port: 8081
