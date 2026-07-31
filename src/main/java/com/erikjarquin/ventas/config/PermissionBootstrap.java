@@ -1,54 +1,38 @@
 package com.erikjarquin.ventas.config;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import com.erikjarquin.ventas.model.entity.PermissionEntity;
+import com.erikjarquin.ventas.model.enums.PermissionName;
 import com.erikjarquin.ventas.repository.PermissionRepository;
 import com.erikjarquin.ventas.repository.RoleRepository;
 
+import jakarta.websocket.OnClose;
+
+@Component
+@Order(3)
 public class PermissionBootstrap implements CommandLineRunner {
     private final PermissionRepository permissionRepository;
-    private final RoleRepository roleRepository;
+    //private final RoleRepository roleRepository;
 
     public PermissionBootstrap(
-        PermissionRepository permissionRepository,
-        RoleRepository roleRepository){
+        PermissionRepository permissionRepository){
             this.permissionRepository=permissionRepository;
-            this.roleRepository=roleRepository;
         }
     
+    @Override
     public void run(String...args) throws Exception{
         if(permissionRepository.count() > 0){
             return;
         }
 
-        List<PermissionEntity> permissions = List.of(
-            new PermissionEntity(null, "VER_PRODUCTOS"),
-            new PermissionEntity(null, "CREAR_PRODUCTOS"),
-            new PermissionEntity(null, "EDITAR_PRODUCTOS"),
-            new PermissionEntity(null, "ELIMINAR_PRODUCTOS"),
-
-            new PermissionEntity(null, "VER_USUARIOS"),
-            new PermissionEntity(null, "CREAR_USUARIOS"),
-            new PermissionEntity(null, "EDITAR_USUARIOS"),
-            new PermissionEntity(null, "ELIMINAR_USUARIOS"),
-
-            new PermissionEntity(null, "VER_VENTAS"),
-            new PermissionEntity(null, "CREAR_VENTAS"),
-            new PermissionEntity(null, "CANCELAR_VENTAS"),
-
-            new PermissionEntity(null, "ABRIR_CAJA"),
-            new PermissionEntity(null, "CERRAR_CAJA"),
-            new PermissionEntity(null, "VER_CORTE_CAJA"),
-
-            new PermissionEntity(null, "VER_REPORTES"),
-            new PermissionEntity(null, "EXPORTAR_REPORTES"),
-            new PermissionEntity(null, "VER_CONFIGURACION"),
-            new PermissionEntity(null, "EDITAR_CONFIGURACION")
-
-        );
+        List<PermissionEntity> permissions = Arrays.stream(
+            PermissionName.values()).map(permission -> new PermissionEntity(null, permission)).toList();
 
         permissionRepository.saveAll(permissions);
     }

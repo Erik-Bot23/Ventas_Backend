@@ -3,10 +3,13 @@ package com.erikjarquin.ventas.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.erikjarquin.ventas.model.enums.PermissionName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,8 +23,10 @@ public class PermissionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private String name;
+    private PermissionName name;
+    //private String name;
 
     @ManyToMany(mappedBy = "permissions")
     @JsonIgnore
@@ -29,7 +34,7 @@ public class PermissionEntity {
 
     public PermissionEntity(){}
 
-    public PermissionEntity(Long id, String name){
+    public PermissionEntity(Long id, PermissionName name){
         this.id=id;
         this.name=name;
     }
@@ -44,11 +49,11 @@ public class PermissionEntity {
     }
 
     //Getter y setter de nombre
-    public String getName(){
+    public PermissionName getName(){
         return name;
     }
 
-    public void setName(String name){
+    public void setName(PermissionName name){
         this.name=name;
     }
 
