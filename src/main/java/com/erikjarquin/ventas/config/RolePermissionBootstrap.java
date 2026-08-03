@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.erikjarquin.ventas.model.entity.PermissionEntity;
@@ -13,6 +14,7 @@ import com.erikjarquin.ventas.repository.PermissionRepository;
 import com.erikjarquin.ventas.repository.RoleRepository;
 
 @Component
+@Order(4)
 public class RolePermissionBootstrap implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
