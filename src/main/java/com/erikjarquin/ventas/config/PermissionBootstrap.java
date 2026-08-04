@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 import com.erikjarquin.ventas.model.entity.PermissionEntity;
 import com.erikjarquin.ventas.model.enums.PermissionName;
 import com.erikjarquin.ventas.repository.PermissionRepository;
-import com.erikjarquin.ventas.repository.RoleRepository;
-
-import jakarta.websocket.OnClose;
 
 @Component
 @Order(3)

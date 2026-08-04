@@ -18,12 +18,18 @@ public class RoleBootstrap  implements CommandLineRunner {
 
     @Override
     public void run(String...args){
-        if(roleRepository.findByName("ADMIN").isEmpty()){
-            RoleEntity adminRole = new RoleEntity();
-            adminRole.setName("ADMIN");
-            roleRepository.save(adminRole);
+        createRoleIfNotExists("ADMIN");
+        createRoleIfNotExists("CAJERO");
+        createRoleIfNotExists("ALMACENISTA");
+    }
 
-            System.out.println("Rol ADMIN creado");
+    private void createRoleIfNotExists(String roleName){
+        if(roleRepository.findByName(roleName).isEmpty()){
+            RoleEntity role = new RoleEntity();
+            role.setName(roleName);
+            roleRepository.save(role);
+
+            System.out.println("Rol creado" + roleName);
         }
     }
 }
