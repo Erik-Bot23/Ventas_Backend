@@ -1,21 +1,23 @@
 package com.erikjarquin.ventas.model.dto.Login;
 
+import java.util.List;
 
 public class LoginResponse {
     private boolean success;
     private Long id;
     private String name;
     private String email;
-    //private List<String> roles;
     private String role;
+    private List<String> permissions;
     private String token;
 
-    public LoginResponse(boolean success, Long id, String name, String email, String role, String token){
+    public LoginResponse(boolean success, Long id, String name, String email, String role, List<String> permissions, String token){
         this.success=success;
         this.id=id;
         this.name=name;
         this.email=email;
         this.role = role;
+        this.permissions=permissions;
         this.token=token;
     }
 
@@ -65,5 +67,13 @@ public class LoginResponse {
 
     public void setToken(String token){
         this.token=token;
+    }
+
+    public List<String> getPermissions(){
+        return permissions;
+    }
+
+    public void setPermissions(List<String> permissions){
+        this.permissions=permissions;
     }
 }

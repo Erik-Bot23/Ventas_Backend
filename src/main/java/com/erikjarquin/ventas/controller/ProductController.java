@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.erikjarquin.ventas.model.dto.ProductsCategories.ProductDto;
 import com.erikjarquin.ventas.service.ProductService;
 
-@PreAuthorize("hasAnyRole('ADMIN', 'CAJERO')")
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -31,6 +30,7 @@ public class ProductController {
         this.service = service;
     }
 
+    @PreAuthorize("hasAuthority('VER_PRODUCTOS')")
     @GetMapping
     public List<ProductDto> getProducts(@RequestParam(required = false) String category){ //¿Long categoryId?
         if (category != null) {
@@ -39,6 +39,7 @@ public class ProductController {
         return service.getAll();
     }
     
+    @PreAuthorize("hasAuthority('CREAR_PRODUCTOS')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProductDto saveProduct(
         @RequestParam("name") String name,
@@ -49,9 +50,10 @@ public class ProductController {
         @RequestParam("barcode") String barcode,
         @RequestParam(value = "image", required = false) MultipartFile image
     ){
-        return service.save(name, price, stock, categoryId, sku, barcode, image); //Me marca erro aqui
+        return service.save(name, price, stock, categoryId, sku, barcode, image); 
     }
 
+    @PreAuthorize("hasAuthority('EDITAR_PRODUCTOS')")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProductDto updateProduct(
         @PathVariable Long id,
@@ -63,20 +65,23 @@ public class ProductController {
         @RequestParam String barcode,
         @RequestParam(value = "image", required = false) MultipartFile image
     ){
-        return service.update(id, name, price, stock, categoryId, sku, barcode, image); //Aqui me marca error
+        return service.update(id, name, price, stock, categoryId, sku, barcode, image);
     }
 
+    @PreAuthorize("hasAuthority('ELIMINAR_PRODUCTOS')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAuthority('VER_PRODUCTOS')")
     @GetMapping("/barcode/{barcode}")
     public ProductDto findByBarcode(@PathVariable String barcode){
         return service.findByBarcode(barcode);
     }
 
+    @PreAuthorize("hasAuthority('VER_PRODUCTOS')")
     @GetMapping("/search")
     public List<ProductDto> search(@RequestParam String q){
         return service.search(q);

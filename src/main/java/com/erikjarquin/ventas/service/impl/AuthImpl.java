@@ -56,12 +56,14 @@ public class AuthImpl implements AuthService {
                         user.getName(),
                         user.getEmail(),
                         user.getRole().getName(),
+                        user.getPermissions(), //Aquí me marca error
                         token
                     ); 
                 })
                 .orElse(
                     new LoginResponse(
                         false,
+                        null,
                         null,
                         null,
                         null,
