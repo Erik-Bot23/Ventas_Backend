@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.erikjarquin.ventas.config.security.SecurityAuthorityMapper;
 import com.erikjarquin.ventas.model.entity.UserEntity;
 import com.erikjarquin.ventas.repository.UserRepository;
 
@@ -22,10 +23,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final SecurityAuthorityMapper authorityMapper;
 
-    public JwtFilter(JwtUtil jwtUtil, UserRepository userRepository){
+    public JwtFilter(JwtUtil jwtUtil, UserRepository userRepository, SecurityAuthorityMapper authorityMapper){
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.authorityMapper=authorityMapper;
     }
 
     @Override
@@ -45,12 +48,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if(jwtUtil.isTokenValid(token)){
                 if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                    UserEntity user = userRepository.findByEmailWithRole(email).orElse(null);//Redundante 
+                    UserEntity user = userRepository.findByEmailWithRoleAndPermissions(email).orElse(null);//Redundante 
 
                     if(user != null){
-                        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().getName());
-
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, List.of(authority));
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, authorityMapper.mapAuthorities(user));
 
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }

@@ -12,13 +12,14 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
 
     @Query("""
-        SELECT u
+        SELECT DISTINCT u
             FROM UserEntity u
-                JOIN FETCH u.role
+                JOIN FETCH u.role r
+                JOIN FETCH r.permissions
                     WHERE u.email = :email
         """)
     
-    Optional<UserEntity> findByEmailWithRole(@Param("email") String email);
+    Optional<UserEntity> findByEmailWithRoleAndPermissions(@Param("email") String email);
     Optional<UserEntity> findByResetToken(String resetToken);
     
 }

@@ -42,7 +42,7 @@ public class AuthImpl implements AuthService {
     @Override
     public LoginResponse login(LoginRequest request){
 
-        return repo.findByEmailWithRole(request.getEmail())
+        return repo.findByEmailWithRoleAndPermissions(request.getEmail())
                 .filter(UserEntity::isActive)
                 .filter(user -> passwordEncoder.matches(
                     request.getPassword(),

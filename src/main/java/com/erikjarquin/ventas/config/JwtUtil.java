@@ -21,7 +21,6 @@ public class JwtUtil {
 
     public String generateToken(UserEntity user){
         return Jwts.builder().setSubject(user.getEmail())
-                .claim("role", user.getRole().getName()) //Redundante
                 .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 *5))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256).compact();
     }

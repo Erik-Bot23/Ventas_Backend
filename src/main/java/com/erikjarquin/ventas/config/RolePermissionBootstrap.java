@@ -1,11 +1,14 @@
 package com.erikjarquin.ventas.config;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.erikjarquin.ventas.model.entity.PermissionEntity;
 import com.erikjarquin.ventas.model.entity.RoleEntity;
@@ -15,6 +18,7 @@ import com.erikjarquin.ventas.repository.RoleRepository;
 
 @Component
 @Order(4)
+@Transactional
 public class RolePermissionBootstrap implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
@@ -30,11 +34,16 @@ public class RolePermissionBootstrap implements CommandLineRunner {
         RoleEntity cajero = roleRepository.findByName("CAJERO").orElseThrow(() -> new RuntimeException("Rol CAJERO no encontrado"));
         RoleEntity almacenista = roleRepository.findByName("ALMACENISTA").orElseThrow(() -> new RuntimeException("Rol ALMACENISTA no encontrado"));
 
+        if(!admin.getPermissions().isEmpty()){
+            return;
+        }
+
         List<PermissionEntity> allPermissions = permissionRepository.findAll();
 
-        admin.setPermissions(allPermissions);
+        admin.setPermissions(new ArrayList<>(allPermissions));
 
         cajero.setPermissions(filterPermissions(
+            allPermissions,
             PermissionName.VER_PRODUCTOS,
             PermissionName.VER_VENTAS,
             PermissionName.CREAR_VENTAS,
@@ -43,6 +52,7 @@ public class RolePermissionBootstrap implements CommandLineRunner {
         ));
 
         almacenista.setPermissions(filterPermissions(
+            allPermissions,
             PermissionName.VER_PRODUCTOS,
             PermissionName.CREAR_PRODUCTOS,
             PermissionName.EDITAR_PRODUCTOS
@@ -53,8 +63,8 @@ public class RolePermissionBootstrap implements CommandLineRunner {
         roleRepository.save(almacenista);
     }
 
-    private List<PermissionEntity> filterPermissions(PermissionName...permissionNames){
+    private List<PermissionEntity> filterPermissions(List<PermissionEntity> permissions,PermissionName...permissionNames){
         Set<PermissionName> requested = Set.of(permissionNames);
-        return permissionRepository.findAll().stream().filter(permission -> requested.contains(permission.getName())).toList();
+        return permissions.stream().filter(permission -> requested.contains(permission.getName())).collect(Collectors.toCollection(ArrayList::new));
     }
 }

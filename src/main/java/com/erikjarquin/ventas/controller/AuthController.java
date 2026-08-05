@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,5 +52,15 @@ public class AuthController {
         service.changePassword(user.getEmail(), req);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me/authorities")
+    public Object authorities(Authentication auth){
+
+        if(auth == null){
+            return "NO AUTHENTICATED";
+        }
+
+        return auth.getAuthorities();
     }
 }
