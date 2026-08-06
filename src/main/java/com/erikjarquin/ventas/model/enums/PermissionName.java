@@ -25,7 +25,7 @@ public enum PermissionName {
     CANCELAR_VENTAS,
 
     //Caja
-    CAJA_ACTIVA,
+    VER_CAJA_ACTIVA,
     ABRIR_CAJA,
     CERRAR_CAJA,
     VER_CORTE_CAJA,

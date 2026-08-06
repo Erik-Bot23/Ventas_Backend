@@ -34,10 +34,6 @@ public class RolePermissionBootstrap implements CommandLineRunner {
         RoleEntity cajero = roleRepository.findByName("CAJERO").orElseThrow(() -> new RuntimeException("Rol CAJERO no encontrado"));
         RoleEntity almacenista = roleRepository.findByName("ALMACENISTA").orElseThrow(() -> new RuntimeException("Rol ALMACENISTA no encontrado"));
 
-        if(!admin.getPermissions().isEmpty()){
-            return;
-        }
-
         List<PermissionEntity> allPermissions = permissionRepository.findAll();
 
         admin.setPermissions(new ArrayList<>(allPermissions));

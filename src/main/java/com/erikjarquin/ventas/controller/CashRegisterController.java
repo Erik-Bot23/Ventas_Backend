@@ -42,7 +42,7 @@ public class CashRegisterController {
         return service.close(request);
     }
 
-    @PreAuthorize("hasAuthority('CAJA_ACTIVA')")
+    @PreAuthorize("hasAuthority('VER_CAJA_ACTIVA')")
     @GetMapping("/active")
     public CashResponse getActiveCash(){
         return service.getActiveCash();
