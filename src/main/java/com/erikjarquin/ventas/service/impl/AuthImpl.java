@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.service.impl;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -50,13 +51,15 @@ public class AuthImpl implements AuthService {
                 .map(user -> {
                     String token = jwtUtil.generateToken(user);
 
+                    List<String> permissions = user.getRole().getPermissions().stream().map(permission -> permission.getName().name()).toList();
+
                     return new LoginResponse(
                         true,
                         user.getId(),
                         user.getName(),
                         user.getEmail(),
                         user.getRole().getName(),
-                        user.getPermissions(), //Aquí me marca error
+                        permissions,
                         token
                     ); 
                 })

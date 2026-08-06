@@ -54,6 +54,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    //Prueba de permisos
     @GetMapping("/me/authorities")
     public Object authorities(Authentication auth){
 
