@@ -14,7 +14,6 @@ import com.erikjarquin.ventas.model.dto.Cash.CloseCashRequest;
 import com.erikjarquin.ventas.model.dto.Cash.OpenCashRequest;
 import com.erikjarquin.ventas.service.CashRegisterService;
 
-@PreAuthorize("hasAnyRole('ADMIN', 'CAJERO')")
 @RestController
 @RequestMapping("/api/cash")
 @CrossOrigin(origins = "http://localhost:4200")

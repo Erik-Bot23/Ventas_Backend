@@ -18,7 +18,6 @@ import com.erikjarquin.ventas.model.dto.UserRole.UpdateUserRequest;
 import com.erikjarquin.ventas.model.dto.UserRole.UserDto;
 import com.erikjarquin.ventas.service.UserService;
 
-@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -46,7 +45,7 @@ public class UserController {
         return service.updateUser(id, request);
     }
 
-    @PreAuthorize("hasAuthority('ELIMINAR_USUARIO')")
+    @PreAuthorize("hasAuthority('DESACTIVAR_USUARIO')")
     @DeleteMapping("/{id}")
     public void deactivateUser(@PathVariable Long id){
         service.deactivateUser(id);

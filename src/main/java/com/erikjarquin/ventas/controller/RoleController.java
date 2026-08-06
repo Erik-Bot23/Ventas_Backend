@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.erikjarquin.ventas.model.dto.UserRole.RoleDto;
 import com.erikjarquin.ventas.service.RoleService;
 
-@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/roles")
 @CrossOrigin(origins = "http://localhost:4200")

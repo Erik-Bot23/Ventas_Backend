@@ -17,7 +17,6 @@ import com.erikjarquin.ventas.model.dto.Sale.SaleRequest;
 import com.erikjarquin.ventas.model.dto.Sale.SaleResponse;
 import com.erikjarquin.ventas.service.SaleService;
 
-@PreAuthorize("hasAnyRole('ADMIN', 'CAJERO')")
 @RestController
 @RequestMapping("/api/sales")
 @CrossOrigin(origins = "http://localhost:4200")
