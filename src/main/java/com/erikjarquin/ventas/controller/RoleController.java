@@ -26,16 +26,19 @@ public class RoleController {
         this.service=service;
     }
 
+    @PreAuthorize("hasAuthority('VER_ROLES')")
     @GetMapping
     public List<RoleDto> getAllRoles(){
         return service.getAllRoles();
     }
 
+    @PreAuthorize("hasAuthority('CREAR_ROLE')")
     @PostMapping
     public RoleDto save(@RequestBody RoleDto dto){
         return service.save(dto);
     }
 
+    @PreAuthorize("hasAuthority('ELIMINAR_ROLE')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
         service.delete(id);

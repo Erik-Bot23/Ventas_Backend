@@ -25,21 +25,25 @@ public class CashRegisterController {
         this.service=service;
     }
 
+    @PreAuthorize("hasAuthority('VER_CORTE_CAJA')")
     @GetMapping("/summary")
     public CashSummaryResponse getSummary(){
         return service.getSummary();
     }
 
+    @PreAuthorize("hasAuthority('ABRIR_CAJA')")
     @PostMapping("/open")
     public CashResponse open(@RequestBody OpenCashRequest request){
         return service.open(request);
     }
 
+    @PreAuthorize("hasAuthority('CERRAR_CAJA')")
     @PostMapping("/close")
     public CashResponse close(@RequestBody CloseCashRequest request){
         return service.close(request);
     }
 
+    @PreAuthorize("hasAuthority('CAJA_ACTIVA')")
     @GetMapping("/active")
     public CashResponse getActiveCash(){
         return service.getActiveCash();

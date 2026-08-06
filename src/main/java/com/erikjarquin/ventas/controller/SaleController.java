@@ -28,16 +28,19 @@ public class SaleController {
         this.service=service;
     }
 
+    @PreAuthorize("hasAuthority('CREAR_VENTAS')")
     @PostMapping
     public SaleResponse processSale(@RequestBody SaleRequest request){
         return service.processSale(request);
     }
 
+    @PreAuthorize("hasAuthority('VER_VENTAS')")
     @GetMapping
     public List<SaleHistoryResponse> getSales(){
         return service.getSales();
     }
 
+    @PreAuthorize("hasAuthority('VER_VENTAS')")
     @GetMapping("/{id}")
     public SaleDetailHistoryResponse getSaleById(@PathVariable Long id){
         return service.getSaleById(id);

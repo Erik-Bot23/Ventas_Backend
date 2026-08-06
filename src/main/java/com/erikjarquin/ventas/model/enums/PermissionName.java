@@ -9,9 +9,16 @@ public enum PermissionName {
 
     //Usuarios
     VER_USUARIOS,
-    CREAR_USUARIOS,
-    EDITAR_USUARIOS,
-    ELIMINAR_USUARIOS,
+    CREAR_USUARIO,
+    EDITAR_USUARIO,
+    ELIMINAR_USUARIO,
+    ACTIVAR_USUARIO,
+    DESACTIVAR_USUARIO,
+
+    //Categorías
+    VER_CATEGORIAS,
+    CREAR_CATEGORIA,
+    ELIMINAR_CATEGORIA,
 
     //Ventas
     VER_VENTAS,
@@ -19,9 +26,15 @@ public enum PermissionName {
     CANCELAR_VENTAS,
 
     //Caja
+    CAJA_ACTIVA,
     ABRIR_CAJA,
     CERRAR_CAJA,
     VER_CORTE_CAJA,
+
+    //Roles
+    VER_ROLES,
+    CREAR_ROLE,
+    ELIMINAR_ROLE,
 
     //Reportes
     VER_REPORTES,

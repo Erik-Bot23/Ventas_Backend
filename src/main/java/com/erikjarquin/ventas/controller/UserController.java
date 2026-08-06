@@ -28,26 +28,31 @@ public class UserController {
         this.service = service;
     }
 
+    @PreAuthorize("hasAuthority('VER_USUARIOS')")
     @GetMapping
     public List<UserDto> getAllUsers(){
         return service.getAllUsers();
     }
 
+    @PreAuthorize("hasAuthority('CREAR_USUARIO')")
     @PostMapping
     public UserDto createUser(@RequestBody CreateUserRequest request){
         return service.createUser(request);
     }
 
+    @PreAuthorize("hasAuthority('EDITAR_USUARIO')")
     @PutMapping("/{id}")
     public UserDto updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request){
         return service.updateUser(id, request);
     }
 
+    @PreAuthorize("hasAuthority('ELIMINAR_USUARIO')")
     @DeleteMapping("/{id}")
     public void deactivateUser(@PathVariable Long id){
         service.deactivateUser(id);
     }
 
+    @PreAuthorize("hasAuthority('ACTIVAR_USUARIO')")
     @PatchMapping("/{id}/active")
     public void activateUser(@PathVariable Long id){
         service.activateUser(id);
