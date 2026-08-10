@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.erikjarquin.ventas.model.dto.UserRole.RoleDto;
+import com.erikjarquin.ventas.model.dto.Role.CreateRoleRequest;
+import com.erikjarquin.ventas.model.dto.Role.RoleDto;
+import com.erikjarquin.ventas.model.dto.Role.UpdateRoleRequest;
 import com.erikjarquin.ventas.service.RoleService;
 
 @RestController
@@ -31,15 +34,29 @@ public class RoleController {
         return service.getAllRoles();
     }
 
+    @PreAuthorize("hasAuthority('VER_ROLES')")
+    @GetMapping("/{id}")
+    public RoleDto getRoleById(@PathVariable Long id){
+        return service.getRoleById(id);
+    }
+
     @PreAuthorize("hasAuthority('CREAR_ROLE')")
     @PostMapping
-    public RoleDto save(@RequestBody RoleDto dto){
-        return service.save(dto);
+    public RoleDto createRole(@RequestBody CreateRoleRequest request){
+        return service.createRole(request);
+    }
+
+    @PreAuthorize("hasAuthority('EDITAR_ROLE')")
+    @PostMapping("/{id}")
+    public RoleDto updateRole(@PathVariable Long id, @RequestBody UpdateRoleRequest request){
+        return service.updateRole(id, request);
     }
 
     @PreAuthorize("hasAuthority('ELIMINAR_ROLE')")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id){
-        service.delete(id);
+    public ResponseEntity<Void> deleteRole(@PathVariable Long id){
+        service.deleteRole(id);
+        
+        return ResponseEntity.noContent().build();
     }
 }

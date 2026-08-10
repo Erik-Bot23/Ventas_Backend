@@ -34,6 +34,7 @@ public enum PermissionName {
     VER_ROLES,
     CREAR_ROLE,
     ELIMINAR_ROLE,
+    EDITAR_ROLE,
 
     //Reportes
     VER_REPORTES,

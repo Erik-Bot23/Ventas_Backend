@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.erikjarquin.ventas.model.enums.PermissionName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,7 +27,6 @@ public class PermissionEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
     private PermissionName name;
-    //private String name;
 
     @ManyToMany(mappedBy = "permissions")
     @JsonIgnore
@@ -66,5 +66,24 @@ public class PermissionEntity {
         this.roles=roles;
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(this == o){
+            return true;
+        }
+
+        if(!(o instanceof PermissionEntity)){
+            return false;
+        }
+
+        PermissionEntity that = (PermissionEntity) o;
+
+        return name == that.name;
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(name);
+    }
     
 }

@@ -2,7 +2,9 @@ package com.erikjarquin.ventas.model.entity;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,6 +19,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name="roles")
@@ -31,12 +34,17 @@ public class RoleEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "role")
-    private List<UserEntity> users;
+    private List<UserEntity> users = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"),
-                inverseJoinColumns = @JoinColumn(name="permission_id"))
-    private List<PermissionEntity> permissions = new ArrayList<>();
+                inverseJoinColumns = @JoinColumn(name="permission_id"),
+                uniqueConstraints = {@UniqueConstraint(name = "uk_role_permission",
+                                                        columnNames = {"role_id", "permission_id"}
+                                                    )
+                                    }
+                )   
+    private Set<PermissionEntity> permissions = new HashSet<>();
 
     public RoleEntity(){}
 
@@ -73,11 +81,11 @@ public class RoleEntity {
     }
 
     //Getter y setter de permissions
-    public List<PermissionEntity> getPermissions(){
+    public Set<PermissionEntity> getPermissions(){
         return permissions;
     } 
 
-    public void setPermissions(List<PermissionEntity> permissions){
+    public void setPermissions(Set<PermissionEntity> permissions){
         this.permissions=permissions;
     }
 

@@ -1,6 +1,6 @@
 package com.erikjarquin.ventas.config;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,31 +36,39 @@ public class RolePermissionBootstrap implements CommandLineRunner {
 
         List<PermissionEntity> allPermissions = permissionRepository.findAll();
 
-        admin.setPermissions(new ArrayList<>(allPermissions));
+        if(admin.getPermissions().isEmpty()) {
+            admin.setPermissions(new HashSet<>(allPermissions));
+            roleRepository.save(admin);
+        }
 
-        cajero.setPermissions(filterPermissions(
-            allPermissions,
-            PermissionName.VER_PRODUCTOS,
-            PermissionName.VER_VENTAS,
-            PermissionName.CREAR_VENTAS,
-            PermissionName.ABRIR_CAJA,
-            PermissionName.CERRAR_CAJA
-        ));
+        if(cajero.getPermissions().isEmpty()){
+            cajero.setPermissions(filterPermissions(
+                    allPermissions, 
+                    PermissionName.VER_PRODUCTOS,
+                    PermissionName.VER_VENTAS,
+                    PermissionName.CREAR_VENTAS,
+                    PermissionName.ABRIR_CAJA,
+                    PermissionName.CERRAR_CAJA
+                )
+            );
+            roleRepository.save(cajero);
+        }
 
-        almacenista.setPermissions(filterPermissions(
-            allPermissions,
-            PermissionName.VER_PRODUCTOS,
-            PermissionName.CREAR_PRODUCTOS,
-            PermissionName.EDITAR_PRODUCTOS
-        ));
+        if(almacenista.getPermissions().isEmpty()) {
+            almacenista.setPermissions(filterPermissions(
+                    allPermissions,
+                    PermissionName.VER_PRODUCTOS,
+                    PermissionName.CREAR_PRODUCTOS,
+                    PermissionName.EDITAR_PRODUCTOS
+                )
+            );
+            roleRepository.save(almacenista);
+        }
 
-        roleRepository.save(admin);
-        roleRepository.save(cajero);
-        roleRepository.save(almacenista);
     }
 
-    private List<PermissionEntity> filterPermissions(List<PermissionEntity> permissions,PermissionName...permissionNames){
+    private Set<PermissionEntity> filterPermissions(List<PermissionEntity> permissions,PermissionName...permissionNames){
         Set<PermissionName> requested = Set.of(permissionNames);
-        return permissions.stream().filter(permission -> requested.contains(permission.getName())).collect(Collectors.toCollection(ArrayList::new));
+        return permissions.stream().filter(permission -> requested.contains(permission.getName())).collect(Collectors.toSet());
     }
 }

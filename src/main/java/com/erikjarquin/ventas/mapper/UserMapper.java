@@ -1,6 +1,6 @@
 package com.erikjarquin.ventas.mapper;
 
-import com.erikjarquin.ventas.model.dto.UserRole.UserDto;
+import com.erikjarquin.ventas.model.dto.User.UserDto;
 import com.erikjarquin.ventas.model.entity.UserEntity;
 
 public class UserMapper {

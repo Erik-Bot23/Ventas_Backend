@@ -2,9 +2,9 @@ package com.erikjarquin.ventas.service;
 
 import java.util.List;
 
-import com.erikjarquin.ventas.model.dto.UserRole.CreateUserRequest;
-import com.erikjarquin.ventas.model.dto.UserRole.UpdateUserRequest;
-import com.erikjarquin.ventas.model.dto.UserRole.UserDto;
+import com.erikjarquin.ventas.model.dto.User.CreateUserRequest;
+import com.erikjarquin.ventas.model.dto.User.UpdateUserRequest;
+import com.erikjarquin.ventas.model.dto.User.UserDto;
 
 //Modulo de usuario completo y carpetas correctas
 public interface  UserService {

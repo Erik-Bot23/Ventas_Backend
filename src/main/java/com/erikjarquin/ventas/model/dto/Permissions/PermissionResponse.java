@@ -1,12 +1,12 @@
-package com.erikjarquin.ventas.model.dto.UserRole;
+package com.erikjarquin.ventas.model.dto.Permissions;
 
-public class RoleDto {
+public class PermissionResponse {
     private Long id;
     private String name;
 
-    public RoleDto(){}
+    public PermissionResponse(){}
 
-    public RoleDto(Long id, String name){
+    public PermissionResponse(Long id, String name){
         this.id=id;
         this.name=name;
     }
@@ -28,4 +28,6 @@ public class RoleDto {
     public void setName(String name){
         this.name=name;
     }
+
+    
 }

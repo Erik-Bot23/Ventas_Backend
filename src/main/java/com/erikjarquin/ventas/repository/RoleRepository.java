@@ -8,4 +8,5 @@ import com.erikjarquin.ventas.model.entity.RoleEntity;
 
 public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
     Optional<RoleEntity> findByName(String name);
+    boolean existsByName(String name);
 }

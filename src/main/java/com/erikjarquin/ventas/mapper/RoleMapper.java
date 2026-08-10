@@ -1,6 +1,9 @@
 package com.erikjarquin.ventas.mapper;
 
-import com.erikjarquin.ventas.model.dto.UserRole.RoleDto;
+import java.util.List;
+
+import com.erikjarquin.ventas.model.dto.Permissions.PermissionResponse;
+import com.erikjarquin.ventas.model.dto.Role.RoleDto;
 import com.erikjarquin.ventas.model.entity.RoleEntity;
 
 public class RoleMapper {
@@ -9,24 +12,12 @@ public class RoleMapper {
             return null;
         }
 
-        RoleDto dto = new RoleDto();
+        List<PermissionResponse> permissions = entity.getPermissions()
+                                                .stream().map(PermissionMapper::toDto).toList();
 
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-
-        return dto;
-    }
-
-    public static RoleEntity toEntity(RoleDto dto){
-        if(dto == null){
-            return null;
-        }
-
-        RoleEntity entity = new RoleEntity();
-
-        entity.setId(dto.getId());
-        entity.setName(dto.getName());
-
-        return entity;
+        return new RoleDto(
+            entity.getId(),
+            entity.getName(),
+            permissions);
     }
 }

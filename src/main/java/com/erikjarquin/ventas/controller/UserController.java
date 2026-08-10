@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.erikjarquin.ventas.model.dto.UserRole.CreateUserRequest;
-import com.erikjarquin.ventas.model.dto.UserRole.UpdateUserRequest;
-import com.erikjarquin.ventas.model.dto.UserRole.UserDto;
+import com.erikjarquin.ventas.model.dto.User.CreateUserRequest;
+import com.erikjarquin.ventas.model.dto.User.UpdateUserRequest;
+import com.erikjarquin.ventas.model.dto.User.UserDto;
 import com.erikjarquin.ventas.service.UserService;
 
 @RestController

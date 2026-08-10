@@ -1,8 +1,5 @@
 package com.erikjarquin.ventas.config;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -15,7 +12,6 @@ import com.erikjarquin.ventas.repository.PermissionRepository;
 @Order(3)
 public class PermissionBootstrap implements CommandLineRunner {
     private final PermissionRepository permissionRepository;
-    //private final RoleRepository roleRepository;
 
     public PermissionBootstrap(
         PermissionRepository permissionRepository){
@@ -23,14 +19,15 @@ public class PermissionBootstrap implements CommandLineRunner {
         }
     
     @Override
-    public void run(String...args) throws Exception{
-        if(permissionRepository.count() > 0){
-            return;
+    public void run(String...args){
+        for(PermissionName permissionName : PermissionName.values()){
+            if(permissionRepository.findByName(permissionName).isEmpty()) {
+                PermissionEntity permission = new PermissionEntity(null, permissionName);
+            
+                permissionRepository.save(permission);
+
+                System.out.println("Permiso creado" + permissionName);
+            }
         }
-
-        List<PermissionEntity> permissions = Arrays.stream(
-            PermissionName.values()).map(permission -> new PermissionEntity(null, permission)).toList();
-
-        permissionRepository.saveAll(permissions);
     }
 }

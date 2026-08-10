@@ -1,4 +1,4 @@
-package com.erikjarquin.ventas.model.dto.UserRole;
+package com.erikjarquin.ventas.model.dto.User;
 
 public class UserDto {
     private Long id;
