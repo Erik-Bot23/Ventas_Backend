@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.erikjarquin.ventas.model.dto.ProductsCategories.CategoryDto;
 import com.erikjarquin.ventas.service.CategoryService;
 
-@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/categories")
 @CrossOrigin(origins = "http://localhost:4200")
