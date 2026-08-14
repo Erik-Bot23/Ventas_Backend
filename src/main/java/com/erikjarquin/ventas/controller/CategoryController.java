@@ -31,13 +31,13 @@ public class CategoryController {
         return service.getAll();
     }
 
-    @PreAuthorize("hasAuthority('CREAR_CATEGORIA')")
+    @PreAuthorize("hasAuthority('CREAR_CATEGORIAS')")
     @PostMapping
     public CategoryDto save(@RequestBody CategoryDto dto){
         return service.save(dto);
     }
 
-    @PreAuthorize("hasAuthority('ELIMINAR_CATEGORIA')")
+    @PreAuthorize("hasAuthority('ELIMINAR_CATEGORIAS')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
         service.delete(id);

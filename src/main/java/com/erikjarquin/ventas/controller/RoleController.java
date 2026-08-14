@@ -41,19 +41,19 @@ public class RoleController {
         return service.getRoleById(id);
     }
 
-    @PreAuthorize("hasAuthority('CREAR_ROLE')")
+    @PreAuthorize("hasAuthority('CREAR_ROLES')")
     @PostMapping
     public RoleDto createRole(@RequestBody CreateRoleRequest request){
         return service.createRole(request);
     }
 
-    @PreAuthorize("hasAuthority('EDITAR_ROLE')")
+    @PreAuthorize("hasAuthority('EDITAR_ROLES')")
     @PutMapping("/{id}")
     public RoleDto updateRole(@PathVariable Long id, @RequestBody UpdateRoleRequest request){
         return service.updateRole(id, request);
     }
 
-    @PreAuthorize("hasAuthority('ELIMINAR_ROLE')")
+    @PreAuthorize("hasAuthority('ELIMINAR_ROLES')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRole(@PathVariable Long id){
         service.deleteRole(id);

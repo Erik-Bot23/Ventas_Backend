@@ -33,25 +33,25 @@ public class UserController {
         return service.getAllUsers();
     }
 
-    @PreAuthorize("hasAuthority('CREAR_USUARIO')")
+    @PreAuthorize("hasAuthority('CREAR_USUARIOS')")
     @PostMapping
     public UserDto createUser(@RequestBody CreateUserRequest request){
         return service.createUser(request);
     }
 
-    @PreAuthorize("hasAuthority('EDITAR_USUARIO')")
+    @PreAuthorize("hasAuthority('EDITAR_USUARIOS')")
     @PutMapping("/{id}")
     public UserDto updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request){
         return service.updateUser(id, request);
     }
 
-    @PreAuthorize("hasAuthority('DESACTIVAR_USUARIO')")
+    @PreAuthorize("hasAuthority('DESACTIVAR_USUARIOS')")
     @DeleteMapping("/{id}")
     public void deactivateUser(@PathVariable Long id){
         service.deactivateUser(id);
     }
 
-    @PreAuthorize("hasAuthority('ACTIVAR_USUARIO')")
+    @PreAuthorize("hasAuthority('ACTIVAR_USUARIOS')")
     @PatchMapping("/{id}/active")
     public void activateUser(@PathVariable Long id){
         service.activateUser(id);
