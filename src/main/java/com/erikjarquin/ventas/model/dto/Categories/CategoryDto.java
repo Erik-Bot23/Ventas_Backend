@@ -1,4 +1,4 @@
-package com.erikjarquin.ventas.model.dto.ProductsCategories;
+package com.erikjarquin.ventas.model.dto.Categories;
 
 public class CategoryDto {
     private Long id;

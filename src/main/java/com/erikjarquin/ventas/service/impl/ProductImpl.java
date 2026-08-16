@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.erikjarquin.ventas.mapper.ProductMapper;
-import com.erikjarquin.ventas.model.dto.ProductsCategories.ProductDto;
+import com.erikjarquin.ventas.model.dto.Products.ProductDto;
 import com.erikjarquin.ventas.model.entity.CategoryEntity;
 import com.erikjarquin.ventas.model.entity.ProductEntity;
 import com.erikjarquin.ventas.repository.CategoryRepository;

@@ -1,9 +1,11 @@
 package com.erikjarquin.ventas.service;
 
-import java.util.List;
-import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
-import com.erikjarquin.ventas.model.dto.ProductsCategories.ProductDto;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.erikjarquin.ventas.model.dto.Products.ProductDto;
 
 public interface ProductService {
     List<ProductDto> getAll();

@@ -1,9 +1,6 @@
 package com.erikjarquin.ventas.model.enums;
 
 public enum PermissionName {
-    //Cobro
-    VER_COBRO,
-
     //Compras
     VER_COMPRAS,
 
@@ -35,7 +32,6 @@ public enum PermissionName {
 
     //Caja
     VER_CAJA,
-    ACTIVAR_CAJA,
     ABRIR_CAJA,
     CERRAR_CAJA,
     CORTE_CAJA,

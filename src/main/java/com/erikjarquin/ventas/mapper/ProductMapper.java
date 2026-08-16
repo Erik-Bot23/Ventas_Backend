@@ -1,6 +1,6 @@
 package com.erikjarquin.ventas.mapper;
 
-import com.erikjarquin.ventas.model.dto.ProductsCategories.ProductDto;
+import com.erikjarquin.ventas.model.dto.Products.ProductDto;
 import com.erikjarquin.ventas.model.entity.ProductEntity;
 
 public class ProductMapper {
