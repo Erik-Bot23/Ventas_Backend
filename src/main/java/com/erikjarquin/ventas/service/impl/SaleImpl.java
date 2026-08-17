@@ -46,14 +46,26 @@ public class SaleImpl implements SaleService {
 
     @Override 
     public SaleResponse processSale(SaleRequest request){
+        
+        /* 1. VALIDAR SOLICITUD */
+        if(request == null){
+            throw new RuntimeException("La solicitud de venta es obligatoria");
+        }
+
+        if(request.getPaymentMethod() == null){
+            throw new RuntimeException("Debe seleccionar un método de pago");
+        }
+        
+        /* 2. VALIDAR CAJA ABIERTA */
         CashRegisterEntity cash = cashRepository.findByActiveTrue().orElseThrow(() -> 
             new RuntimeException("No existe una caja abierta"));
 
-        //Validar que haya items
+        /* 3. VALIDAR PRODUCTOS*/
         if(request.getItems() == null || request.getItems().isEmpty()){
             throw new RuntimeException("La venta no tiene productos");
         }
 
+        /* 4. CREAR VENTA */
         SaleEntity sale = new SaleEntity();
         sale.setSaleDate(LocalDateTime.now());
         sale.setPaymentMethod(request.getPaymentMethod());
@@ -62,20 +74,37 @@ public class SaleImpl implements SaleService {
         List<SaleDetailEntity> details = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
+        /* 5. PROCESAR PRODUCTOS*/
         for(SaleItemRequest item : request.getItems()){
+            if(item == null){
+                throw new RuntimeException("La venta contiene un producto inválido");
+            }
+
+            if(item.getProductId() == null){
+                throw new RuntimeException("El producto es obligatorio");
+            }
+
+            if(item.getQuantity() == null || item.getQuantity() <= 0){
+                throw new RuntimeException("La cantidad del producto debe ser mayor a 0");
+            }
+            
             ProductEntity product = productRepository.findById(item.getProductId()).orElseThrow(() -> 
             new RuntimeException("Producto no encontrado: " + item.getProductId()));
 
-            //Validar que haya stock
+            /* 6. Validar que haya stock*/
             if(product.getStock() < item.getQuantity()){
                 throw new RuntimeException("Stock insuficiente: " + product.getName());
             }
 
+            /* 7. CALCULAR SUBTOTAL*/
             BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
             total = total.add(subtotal);
+
+            /* 8. DESCONTAR STOCK*/
             product.setStock(product.getStock() - item.getQuantity());
             productRepository.save(product);
             
+            /* 9. CREAR DETALLE*/
             SaleDetailEntity detail = new SaleDetailEntity();
             detail.setSale(sale);
             detail.setProduct(product);
@@ -85,24 +114,43 @@ public class SaleImpl implements SaleService {
             details.add(detail);
         }
 
+        /* 10. VALIDAR PAGO EN EFECTIVO*/
         if(request.getPaymentMethod() == PaymentMethod.CASH){
-            if(request.getCashReceived() == null || request.getCashReceived().compareTo(total) < 0){
+            if(request.getCashReceived() == null){
+                throw new RuntimeException("Debe indicar el efectivo recibido");
+            }
+
+            if(request.getCashReceived().compareTo(BigDecimal.ZERO) <= 0){
+                throw new RuntimeException("El efectivo recibido debe ser mayor a cero");
+            }
+
+            if(request.getCashReceived().compareTo(total) < 0){
                 throw new RuntimeException("Pago insuficiente");
             }
         }
 
+        /* 11. GUARDAR TOTAL*/
         sale.setTotal(total);
         BigDecimal change = BigDecimal.ZERO;
 
+
+        /* 12. CALCULAR CAMBIO*/
         if(request.getPaymentMethod() == PaymentMethod.CASH){
             change = request.getCashReceived().subtract(total);
             sale.setCashReceived(request.getCashReceived());
             sale.setChangeAmount(change);
+        } else{
+            sale.setCashReceived(null);
+            sale.setChangeAmount(null);
         }
 
+        /* 13. ASOCIAR DETALLES*/
         sale.setDetails(details);
+
+        /* 14. GUARDAR VENTA*/
         SaleEntity saved = saleRepository.save(sale);
         
+        /* 15. RESULTADO*/
         return mapper.toResponse(saved);
     }
 
