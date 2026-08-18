@@ -3,6 +3,7 @@ package com.erikjarquin.ventas.model.dto.Sale;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.erikjarquin.ventas.model.dto.Payment.CardPaymentRequest;
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
 
 public class SaleRequest {
@@ -11,6 +12,8 @@ public class SaleRequest {
     private BigDecimal cashReceived;
 
     private List<SaleItemRequest> items;
+
+    private CardPaymentRequest cardPayment; //Pago con tarjeta
 
     public SaleRequest(){}
 
@@ -39,5 +42,14 @@ public class SaleRequest {
 
     public void setItems(List<SaleItemRequest> items){
         this.items=items;
+    }
+
+    //Getter y setter de cardPayment
+    public CardPaymentRequest getCardPayment(){
+        return cardPayment;
+    }
+
+    public void setCardPayment(CardPaymentRequest cardPayment){
+        this.cardPayment=cardPayment;
     }
 }

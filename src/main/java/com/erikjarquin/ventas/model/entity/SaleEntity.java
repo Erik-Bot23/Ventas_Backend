@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
+import com.erikjarquin.ventas.model.enums.PaymentStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -46,6 +47,9 @@ public class SaleEntity {
     @ManyToOne
     @JoinColumn(name = "cash_register_id")
     private CashRegisterEntity cashRegister;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
     public SaleEntity(){}
 
@@ -119,6 +123,15 @@ public class SaleEntity {
 
     public void setCashRegister(CashRegisterEntity cashRegister){
         this.cashRegister=cashRegister;
+    }
+
+    //Getter y setter de paymentStatus
+    public PaymentStatus getPaymentStatus(){
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus){
+        this.paymentStatus=paymentStatus;
     }
 
 }
