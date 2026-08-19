@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
+import com.erikjarquin.ventas.model.enums.PaymentStatus;
 
 
 public class SaleHistoryResponse {
@@ -13,6 +14,7 @@ public class SaleHistoryResponse {
     private PaymentMethod paymentMethod;
     private BigDecimal cashReceived;
     private BigDecimal changeAmount;
+    private PaymentStatus paymentStatus;
     
     public SaleHistoryResponse(){}
 
@@ -68,5 +70,14 @@ public class SaleHistoryResponse {
 
     public void setChangeAmount(BigDecimal changeAmount){
         this.changeAmount=changeAmount;
+    }
+
+    //Getter y setter de paymentStatus
+    public PaymentStatus getPaymentStatus(){
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus){
+        this.paymentStatus=paymentStatus;
     }
 }

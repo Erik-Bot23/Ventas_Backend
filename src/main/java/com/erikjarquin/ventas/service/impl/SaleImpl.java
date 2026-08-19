@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.erikjarquin.ventas.mapper.SaleMapper;
+import com.erikjarquin.ventas.model.dto.Payment.CardPaymentRequest;
+import com.erikjarquin.ventas.model.dto.Payment.CardPaymentResponse;
 import com.erikjarquin.ventas.model.dto.Sale.SaleDetailHistoryResponse;
 import com.erikjarquin.ventas.model.dto.Sale.SaleHistoryResponse;
 import com.erikjarquin.ventas.model.dto.Sale.SaleItemRequest;
@@ -19,9 +21,11 @@ import com.erikjarquin.ventas.model.entity.ProductEntity;
 import com.erikjarquin.ventas.model.entity.SaleDetailEntity;
 import com.erikjarquin.ventas.model.entity.SaleEntity;
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
+import com.erikjarquin.ventas.model.enums.PaymentStatus;
 import com.erikjarquin.ventas.repository.CashRegisterRepository;
 import com.erikjarquin.ventas.repository.ProductRepository;
 import com.erikjarquin.ventas.repository.SaleRepository;
+import com.erikjarquin.ventas.service.PaymentService;
 import com.erikjarquin.ventas.service.SaleService;
 
 @Service
@@ -31,17 +35,20 @@ public class SaleImpl implements SaleService {
     private final SaleRepository saleRepository;
     private final CashRegisterRepository cashRepository;
     private final SaleMapper mapper;
+    private final PaymentService paymentService;
 
     public SaleImpl(
         ProductRepository productRepository,
         SaleRepository saleRepository,
         CashRegisterRepository cashRepository,
-        SaleMapper mapper
+        SaleMapper mapper,
+        PaymentService paymentService
     ){
         this.productRepository = productRepository;
         this.saleRepository = saleRepository;
         this.cashRepository = cashRepository;
         this.mapper = mapper;
+        this.paymentService=paymentService;
     }
 
     @Override 
@@ -70,6 +77,7 @@ public class SaleImpl implements SaleService {
         sale.setSaleDate(LocalDateTime.now());
         sale.setPaymentMethod(request.getPaymentMethod());
         sale.setCashRegister(cash);
+        sale.setPaymentStatus(PaymentStatus.PEDDING);
 
         List<SaleDetailEntity> details = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -114,8 +122,13 @@ public class SaleImpl implements SaleService {
             details.add(detail);
         }
 
-        /* 10. VALIDAR PAGO EN EFECTIVO*/
+        /* 10. Guardar total en la venta*/
+        sale.setTotal(total);
+        sale.setDetails(details);
+
+        /* 11. Procesar pago según método*/
         if(request.getPaymentMethod() == PaymentMethod.CASH){
+            // ==== Pago en efectivo ====
             if(request.getCashReceived() == null){
                 throw new RuntimeException("Debe indicar el efectivo recibido");
             }
@@ -127,31 +140,69 @@ public class SaleImpl implements SaleService {
             if(request.getCashReceived().compareTo(total) < 0){
                 throw new RuntimeException("Pago insuficiente");
             }
-        }
 
-        /* 11. GUARDAR TOTAL*/
-        sale.setTotal(total);
-        BigDecimal change = BigDecimal.ZERO;
-
-
-        /* 12. CALCULAR CAMBIO*/
-        if(request.getPaymentMethod() == PaymentMethod.CASH){
-            change = request.getCashReceived().subtract(total);
+            // ==== Calcular cambio ====
+            BigDecimal change = request.getCashReceived().subtract(total);
             sale.setCashReceived(request.getCashReceived());
             sale.setChangeAmount(change);
-        } else{
-            sale.setCashReceived(null);
-            sale.setChangeAmount(null);
+            sale.setPaymentStatus(PaymentStatus.APPROVED); //Pagado en efectivo
+
+        } else if(request.getPaymentMethod() == PaymentMethod.DEBIT ||
+                    request.getPaymentMethod() == PaymentMethod.CREDIT){
+                // ==== Pago con tarjeta ====
+                //Validar que vengan datos de tarjeta
+                if(request.getCardPayment() == null){
+                    throw new RuntimeException("Debe proporcionar datos de la tarjeta");
+                }
+
+                //Guardar la venta primero (necesaria para el pago)
+                SaleEntity savedSale = saleRepository.save(sale);
+
+                try{
+                    //Preparar request para PaymentService
+                    CardPaymentRequest cardRequest = request.getCardPayment();
+                    cardRequest.setSaleId(savedSale.getId());
+                    cardRequest.setPaymentMethod(request.getPaymentMethod());
+
+                    //Procesar el pago con tarjeta
+                    CardPaymentResponse paymentResponse = paymentService.processCardPayment(cardRequest);
+
+                    //Actualizar el estado según la respuesta
+                    if(paymentResponse.getStatus() == PaymentStatus.APPROVED){
+                        savedSale.setPaymentStatus(PaymentStatus.APPROVED);
+                        savedSale.setCashReceived(null);
+                        savedSale.setChangeAmount(null);
+
+                        // ← NUEVO: Asociar el pago con la venta
+                        // Necesitas obtener el PaymentEntity que se creó en PaymentService
+                        // Opción: Hacer que PaymentService retorne el PaymentEntity o buscarlo después
+                        // paymentRepository.findBySaleId(savedSale.getId()).ifPresent(savedSale::setPayment);
+                        //Aquí podrías guardar más información de la transacción en la venta si lo deseas
+                    } else {
+                        savedSale.setPaymentStatus(PaymentStatus.REJECTED);
+                        throw new RuntimeException("Pago con tarjeta rechazado: " + paymentResponse.getMessage());
+                    }
+
+                    //Actualizar la venta con el estado final
+                    sale = saleRepository.save(savedSale);
+                } catch (Exception e){
+                    // Si falla el pago, revertir el stock
+                    for(SaleDetailEntity detail : details){
+                        ProductEntity product = detail.getProduct();
+                        product.setStock(product.getStock() + detail.getQuantity());
+                        productRepository.save(product);
+                    }
+                    throw new RuntimeException("Error al procesar pago con tarjeta: " + e.getMessage());
+                }
+        } else {
+            throw new RuntimeException("Método de pago no soportado");
         }
 
-        /* 13. ASOCIAR DETALLES*/
-        sale.setDetails(details);
+        /* 12. Guardar la venta final*/
+        SaleEntity finalSale = saleRepository.save(sale);
 
-        /* 14. GUARDAR VENTA*/
-        SaleEntity saved = saleRepository.save(sale);
-        
-        /* 15. RESULTADO*/
-        return mapper.toResponse(saved);
+        /* 13. Resultado*/
+        return mapper.toResponse(finalSale);
     }
 
     @Override
@@ -161,7 +212,8 @@ public class SaleImpl implements SaleService {
 
     @Override
     public SaleDetailHistoryResponse getSaleById(Long saleId){
-        SaleEntity sale = saleRepository.findById(saleId).orElseThrow();
+        SaleEntity sale = saleRepository.findById(saleId).orElseThrow(
+            () -> new RuntimeException("Venta no encontrada"));
 
         return mapper.toDetailResponse(sale);
     }

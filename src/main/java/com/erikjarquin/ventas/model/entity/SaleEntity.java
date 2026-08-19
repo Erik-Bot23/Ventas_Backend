@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -50,6 +51,9 @@ public class SaleEntity {
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+
+    @OneToOne(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PaymentEntity payment;
 
     public SaleEntity(){}
 
@@ -132,6 +136,15 @@ public class SaleEntity {
 
     public void setPaymentStatus(PaymentStatus paymentStatus){
         this.paymentStatus=paymentStatus;
+    }
+
+    //Getter y setter de payment
+    public PaymentEntity getPayment(){
+        return payment;
+    }
+
+    public void setPayment(PaymentEntity payment){
+        this.payment=payment;
     }
 
 }

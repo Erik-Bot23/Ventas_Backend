@@ -1,11 +1,23 @@
 package com.erikjarquin.ventas.model.dto.Payment;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+//@AllArgsConstructor
+@NoArgsConstructor
 public class PaymentValidationResult {
     private boolean valid;
-    private String errorMessage;  
+    private String errorMessage; 
+    
+    public PaymentValidationResult(boolean valid, String errorMessage){
+        this.valid=valid;
+        this.errorMessage=errorMessage;
+    }
     
     //Getter y setter de valid
-    public boolean getValid(){
+    public boolean isValid(){
         return valid;
     }
 

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
+import com.erikjarquin.ventas.model.enums.PaymentStatus;
 
 public class SaleDetailHistoryResponse {
     private Long saleId;
@@ -12,6 +13,7 @@ public class SaleDetailHistoryResponse {
     private BigDecimal total;
     private PaymentMethod paymentMethod;
     private List<SaleDetailResponse> items;
+    private PaymentStatus paymentStatus;
 
     //Getter y setter de saleId
     public Long getSaleId(){
@@ -56,6 +58,15 @@ public class SaleDetailHistoryResponse {
 
     public void setItems(List<SaleDetailResponse> items){
         this.items = items;
+    }
+
+    //Getter y setter
+    public PaymentStatus getPaymentStatus(){
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus){
+        this.paymentStatus=paymentStatus;
     }
     
 }
