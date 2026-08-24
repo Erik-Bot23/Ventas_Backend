@@ -41,7 +41,17 @@ public class PaymentEntity {
 
     private String lastFourDigits; //Últimos cuatro dígitos de la tarjeta (por seguridad)
 
-    private String errorMesaage; // Si fue rechazado, razón
+    private String errorMessage; // Si fue rechazado, razón
+
+    private String transactionId; // ID de la transacción
+
+    private String cardBrand; // Marca de la tarjeta (Visa, MC)
+
+    private String cardType; // CREDIT O DEBIT
+
+    private String responseCode; // Código de respuesta del banco
+
+    private String responseMessage; // Mensaje del banco
 
     //Getter y setter de id
     public Long getId(){
@@ -117,10 +127,20 @@ public class PaymentEntity {
 
     //Getter y setter de errorMessage
     public String getErrorMessage(){
-        return errorMesaage;
+        return errorMessage;
     }
 
     public void setErrorMessage(String errorMessage){
-        this.errorMesaage=errorMessage;
+        this.errorMessage=errorMessage;
     }
+
+    //Getter y setter de transactionId
+
+    //Getter y setter de responseCode
+
+    //Getter y setter de responseMessage
+
+    //Getter y setter de cardBrand
+
+    //Getter y setter de cardType
 }
