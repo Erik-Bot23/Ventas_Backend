@@ -1,7 +1,7 @@
 package com.erikjarquin.ventas.model.enums;
 
 public enum PaymentStatus {
-    PEDDING("Pendiente"),
+    PENDING("Pendiente"),
     APPROVED("Aprobado"),
     REJECTED("Rechazado");
 

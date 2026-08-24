@@ -23,6 +23,7 @@ import com.erikjarquin.ventas.model.entity.SaleEntity;
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
 import com.erikjarquin.ventas.model.enums.PaymentStatus;
 import com.erikjarquin.ventas.repository.CashRegisterRepository;
+import com.erikjarquin.ventas.repository.PaymentRepository;
 import com.erikjarquin.ventas.repository.ProductRepository;
 import com.erikjarquin.ventas.repository.SaleRepository;
 import com.erikjarquin.ventas.service.PaymentService;
@@ -36,19 +37,22 @@ public class SaleImpl implements SaleService {
     private final CashRegisterRepository cashRepository;
     private final SaleMapper mapper;
     private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
 
     public SaleImpl(
         ProductRepository productRepository,
         SaleRepository saleRepository,
         CashRegisterRepository cashRepository,
         SaleMapper mapper,
-        PaymentService paymentService
+        PaymentService paymentService,
+        PaymentRepository paymentRepository
     ){
         this.productRepository = productRepository;
         this.saleRepository = saleRepository;
         this.cashRepository = cashRepository;
         this.mapper = mapper;
         this.paymentService=paymentService;
+        this.paymentRepository=paymentRepository;
     }
 
     @Override 
@@ -77,7 +81,7 @@ public class SaleImpl implements SaleService {
         sale.setSaleDate(LocalDateTime.now());
         sale.setPaymentMethod(request.getPaymentMethod());
         sale.setCashRegister(cash);
-        sale.setPaymentStatus(PaymentStatus.PEDDING);
+        sale.setPaymentStatus(PaymentStatus.PENDING);
 
         List<SaleDetailEntity> details = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -176,7 +180,8 @@ public class SaleImpl implements SaleService {
                         // ← NUEVO: Asociar el pago con la venta
                         // Necesitas obtener el PaymentEntity que se creó en PaymentService
                         // Opción: Hacer que PaymentService retorne el PaymentEntity o buscarlo después
-                        // paymentRepository.findBySaleId(savedSale.getId()).ifPresent(savedSale::setPayment);
+                         paymentRepository.findBySaleId(savedSale.getId()).ifPresent(savedSale::setPayment);
+                        
                         //Aquí podrías guardar más información de la transacción en la venta si lo deseas
                     } else {
                         savedSale.setPaymentStatus(PaymentStatus.REJECTED);

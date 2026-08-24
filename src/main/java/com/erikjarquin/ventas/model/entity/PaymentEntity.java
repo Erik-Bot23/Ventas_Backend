@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -90,11 +89,11 @@ public class PaymentEntity {
     }
 
     //Getter y setter de codigo
-    public String getCode(){
+    public String getAuthorizationCode(){
         return authorizationCode;
     }
 
-    public void setCode(String authorizationCode){
+    public void setAuthorizarionCode(String authorizationCode){
         this.authorizationCode=authorizationCode;
     }
 

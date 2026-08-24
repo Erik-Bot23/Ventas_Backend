@@ -8,11 +8,8 @@ import com.erikjarquin.ventas.model.enums.PaymentMethod;
 
 public class SaleRequest {
     private PaymentMethod paymentMethod;
-
     private BigDecimal cashReceived;
-
     private List<SaleItemRequest> items;
-
     private CardPaymentRequest cardPayment; //Pago con tarjeta
 
     public SaleRequest(){}

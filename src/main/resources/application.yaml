@@ -38,3 +38,15 @@ app:
 
 server:
   port: 8081
+
+payment:
+ terminal:
+   type: SIMULATED # O PHYSICAL
+   host: 192.168.1.100
+   port: 8080
+   merchant-id: "MERCHANT12345"
+   terminal-id: "TERMINAL001"
+   timeout: 30
+   ssl-enabled: true
+   keystore-path: /certs/terminal.jks
+   keystore-password: changeit

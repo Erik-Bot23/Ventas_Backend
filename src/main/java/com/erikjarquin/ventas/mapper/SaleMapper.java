@@ -27,20 +27,12 @@ public class SaleMapper {
         //Si el pago fue con tarjeta, obtener información del payment
         if(sale.getPaymentMethod() == PaymentMethod.DEBIT || 
             sale.getPaymentMethod() == PaymentMethod.CREDIT){
-                // Opción 1: Si tienes relación OneToOne en SaleEntity
-                // if(sale.getPayment() != null) {
-                //     response.setLastFourDigits(sale.getPayment().getLastFourDigits());
-                //     response.setAuthorizationCode(sale.getPayment().getAuthorizationCode());
-                //     response.setErrorMessage(sale.getPayment().getErrorMessage());
-                // }
-                
-                // Opción 2: Si necesitas consultar el payment por ID de venta
-                // (Asumiendo que tienes un PaymentRepository inyectado)
-                // paymentRepository.findBySaleId(sale.getId()).ifPresent(payment -> {
-                //     response.setLastFourDigits(payment.getLastFourDigits());
-                //     response.setAuthorizationCode(payment.getAuthorizationCode());
-                //     response.setErrorMessage(payment.getErrorMessage());
-                // });
+                //Opción 1: Si tienes relación OneToOne en SaleEntity
+                if(sale.getPayment() != null) {
+                    response.setLastFourDigits(sale.getPayment().getLastFourDigits());
+                    response.setAuthorizationCode(sale.getPayment().getAuthorizationCode());
+                    response.setErrorMessage(sale.getPayment().getErrorMessage());
+                }
         }
 
         return response;

@@ -1,16 +1,19 @@
 package com.erikjarquin.ventas.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.erikjarquin.ventas.model.dto.Payment.CardPaymentResponse;
 import com.erikjarquin.ventas.model.entity.PaymentEntity;
 import com.erikjarquin.ventas.model.enums.PaymentStatus;
 
+@Component
 public class PaymentMapper {
     public CardPaymentResponse toCardPaymentResponse(PaymentEntity payment){
         CardPaymentResponse response = new CardPaymentResponse();
         response.setPaymentId(payment.getId());
         response.setSaleId(payment.getSale().getId());
         response.setStatus(payment.getStatus());
-        response.setAuthorizationCode(payment.getCode());
+        response.setAuthorizationCode(payment.getAuthorizationCode());
         response.setAmount(payment.getAmount());
         response.setPaymentDate(payment.getPaymentDate());
 
