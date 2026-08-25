@@ -50,3 +50,5 @@ payment:
    ssl-enabled: true
    keystore-path: /certs/terminal.jks
    keystore-password: changeit
+   simulation:
+    mode: DETERMINISTIC #DETERMINISTIC | RANDOM

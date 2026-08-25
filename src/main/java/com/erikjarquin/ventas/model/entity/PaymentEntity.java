@@ -135,12 +135,48 @@ public class PaymentEntity {
     }
 
     //Getter y setter de transactionId
+    public String getTransactionId(){
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId){
+        this.transactionId=transactionId;
+    }
 
     //Getter y setter de responseCode
+    public String getResponseCode(){
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode){
+        this.responseCode=responseCode;
+    }
 
     //Getter y setter de responseMessage
+    public String getResponseMessage(){
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String responseMessage){
+        this.responseMessage=responseMessage;
+    }
 
     //Getter y setter de cardBrand
+    public String getCardBrand(){
+        return cardBrand;
+    }
+
+    public void setCardBrand(String cardBrand){
+        this.cardBrand=cardBrand;
+    }
 
     //Getter y setter de cardType
+    public String getCardType(){
+        return cardType;
+    }
+
+    public void setCardType(String cardType){
+        this.cardType=cardType;
+    }
+
 }
