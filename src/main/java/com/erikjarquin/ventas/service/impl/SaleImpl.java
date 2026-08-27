@@ -29,8 +29,11 @@ import com.erikjarquin.ventas.repository.SaleRepository;
 import com.erikjarquin.ventas.service.PaymentService;
 import com.erikjarquin.ventas.service.SaleService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
-@Transactional
+//@Transactional
 public class SaleImpl implements SaleService {
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
@@ -56,159 +59,220 @@ public class SaleImpl implements SaleService {
     }
 
     @Override 
+    @Transactional(rollbackFor = Exception.class)
     public SaleResponse processSale(SaleRequest request){
-        
-        /* 1. VALIDAR SOLICITUD */
+        log.info("Iniciando proceso de venta. Método de pago: {}", request.getPaymentMethod());
+
+        /* 1. VALIDACIONES INICIALES */
+        validateRequest(request);
+
+        /* 2. VERIFICAR CAJA ABIERTA*/
+        CashRegisterEntity cash = getActiveCashRegister();
+
+        /* 3. CREAR VENTA (sin detalles todavía) */
+        SaleEntity sale = createBaseSale(request, cash);
+
+        /* 4. PROCESAR PRODUCTOS Y CALCULAR TOTAL */
+        ProcessedProducts processed = processProducts(request.getItems(), sale);
+        sale.setDetails(processed.getDetails());
+        sale.setTotal(processed.getTotal());
+
+        /* 5. PROCESAR PAGO SEGÚN MÉTODO */
+        processPayment(request, sale);
+
+        /* 6. GUARDAR VENTA COMPLETA */
+        SaleEntity savedSale = saleRepository.save(sale);
+        log.info("Venta completada exitosamente. ID: {}, Total: ${}", savedSale.getId(), savedSale.getTotal());
+
+        /* RETORNAR RESPUESTA */
+        return mapper.toResponse(savedSale);
+    }
+
+    // ====== Métodos privados =====
+    private void validateRequest(SaleRequest request){
         if(request == null){
-            throw new RuntimeException("La solicitud de venta es obligatoria");
+            throw new SaleException("La solicitud de venta es obligatoria");        
         }
 
         if(request.getPaymentMethod() == null){
-            throw new RuntimeException("Debe seleccionar un método de pago");
+            throw new SaleException("Debe seleccionar un método de pago");
         }
-        
-        /* 2. VALIDAR CAJA ABIERTA */
-        CashRegisterEntity cash = cashRepository.findByActiveTrue().orElseThrow(() -> 
-            new RuntimeException("No existe una caja abierta"));
 
-        /* 3. VALIDAR PRODUCTOS*/
         if(request.getItems() == null || request.getItems().isEmpty()){
-            throw new RuntimeException("La venta no tiene productos");
+            throw new SaleException("La venta no tiene productos");
         }
+    }
 
-        /* 4. CREAR VENTA */
+    private CashRegisterEntity getActiveCashRegister(){
+        return cashRepository.findByActiveTrue().orElseThrow(() -> new SaleException("No existe una caja abierta"));
+    }
+
+    private SaleEntity createBaseSale(SaleRequest request, CashRegisterEntity cash){
         SaleEntity sale = new SaleEntity();
         sale.setSaleDate(LocalDateTime.now());
         sale.setPaymentMethod(request.getPaymentMethod());
         sale.setCashRegister(cash);
         sale.setPaymentStatus(PaymentStatus.PENDING);
+        return sale;
+    }
 
+    private ProcessedProducts processProducts(List<SaleItemRequest> items, SaleEntity sale){
         List<SaleDetailEntity> details = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
-        /* 5. PROCESAR PRODUCTOS*/
-        for(SaleItemRequest item : request.getItems()){
-            if(item == null){
-                throw new RuntimeException("La venta contiene un producto inválido");
-            }
+        for(SaleItemRequest item : items){
+            validateItem(item);
 
-            if(item.getProductId() == null){
-                throw new RuntimeException("El producto es obligatorio");
-            }
+            ProductEntity product = findProduct(item.getProductId());
+            validateStock(product, item.getQuantity());
 
-            if(item.getQuantity() == null || item.getQuantity() <= 0){
-                throw new RuntimeException("La cantidad del producto debe ser mayor a 0");
-            }
-            
-            ProductEntity product = productRepository.findById(item.getProductId()).orElseThrow(() -> 
-            new RuntimeException("Producto no encontrado: " + item.getProductId()));
-
-            /* 6. Validar que haya stock*/
-            if(product.getStock() < item.getQuantity()){
-                throw new RuntimeException("Stock insuficiente: " + product.getName());
-            }
-
-            /* 7. CALCULAR SUBTOTAL*/
-            BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-            total = total.add(subtotal);
-
-            /* 8. DESCONTAR STOCK*/
+            //DESCONTAR STOCK (dentro de la misma transacción)
             product.setStock(product.getStock() - item.getQuantity());
             productRepository.save(product);
-            
-            /* 9. CREAR DETALLE*/
-            SaleDetailEntity detail = new SaleDetailEntity();
-            detail.setSale(sale);
-            detail.setProduct(product);
-            detail.setQuantity(item.getQuantity());
-            detail.setUnitPrice(product.getPrice());
-            detail.setSubTotal(subtotal);
+
+            BigDecimal subtotal = calculateSubtotal(product, item.getQuantity());
+            total = total.add(subtotal);
+
+            SaleDetailEntity detail = createDetail(sale, product, item, subtotal);
             details.add(detail);
         }
 
-        /* 10. Guardar total en la venta*/
-        sale.setTotal(total);
-        sale.setDetails(details);
+        return new ProcessedProducts(details, total);
+    }
 
-        /* 11. Procesar pago según método*/
-        if(request.getPaymentMethod() == PaymentMethod.CASH){
-            // ==== Pago en efectivo ====
-            if(request.getCashReceived() == null){
-                throw new RuntimeException("Debe indicar el efectivo recibido");
-            }
-
-            if(request.getCashReceived().compareTo(BigDecimal.ZERO) <= 0){
-                throw new RuntimeException("El efectivo recibido debe ser mayor a cero");
-            }
-
-            if(request.getCashReceived().compareTo(total) < 0){
-                throw new RuntimeException("Pago insuficiente");
-            }
-
-            // ==== Calcular cambio ====
-            BigDecimal change = request.getCashReceived().subtract(total);
-            sale.setCashReceived(request.getCashReceived());
-            sale.setChangeAmount(change);
-            sale.setPaymentStatus(PaymentStatus.APPROVED); //Pagado en efectivo
-
-        } else if(request.getPaymentMethod() == PaymentMethod.DEBIT ||
-                    request.getPaymentMethod() == PaymentMethod.CREDIT){
-                // ==== Pago con tarjeta ====
-                //Validar que vengan datos de tarjeta
-                if(request.getCardPayment() == null){
-                    throw new RuntimeException("Debe proporcionar datos de la tarjeta");
-                }
-
-                //Guardar la venta primero (necesaria para el pago)
-                SaleEntity savedSale = saleRepository.save(sale);
-
-                try{
-                    //Preparar request para PaymentService
-                    CardPaymentRequest cardRequest = request.getCardPayment();
-                    cardRequest.setSaleId(savedSale.getId());
-                    cardRequest.setPaymentMethod(request.getPaymentMethod());
-
-                    //Procesar el pago con tarjeta
-                    CardPaymentResponse paymentResponse = paymentService.processCardPayment(cardRequest);
-
-                    //Actualizar el estado según la respuesta
-                    if(paymentResponse.getStatus() == PaymentStatus.APPROVED){
-                        savedSale.setPaymentStatus(PaymentStatus.APPROVED);
-                        savedSale.setCashReceived(null);
-                        savedSale.setChangeAmount(null);
-
-                        // ← NUEVO: Asociar el pago con la venta
-                        // Necesitas obtener el PaymentEntity que se creó en PaymentService
-                        // Opción: Hacer que PaymentService retorne el PaymentEntity o buscarlo después
-                         paymentRepository.findBySaleId(savedSale.getId()).ifPresent(savedSale::setPayment);
-                        
-                        //Aquí podrías guardar más información de la transacción en la venta si lo deseas
-                    } else {
-                        savedSale.setPaymentStatus(PaymentStatus.REJECTED);
-                        throw new RuntimeException("Pago con tarjeta rechazado: " + paymentResponse.getMessage());
-                    }
-
-                    //Actualizar la venta con el estado final
-                    sale = saleRepository.save(savedSale);
-                } catch (Exception e){
-                    // Si falla el pago, revertir el stock
-                    for(SaleDetailEntity detail : details){
-                        ProductEntity product = detail.getProduct();
-                        product.setStock(product.getStock() + detail.getQuantity());
-                        productRepository.save(product);
-                    }
-                    throw new RuntimeException("Error al procesar pago con tarjeta: " + e.getMessage());
-                }
-        } else {
-            throw new RuntimeException("Método de pago no soportado");
+    private void validateItem(SaleItemRequest item){
+        if(item == null){
+            throw new SaleException("La venta contiene un producto inválido");
         }
 
-        /* 12. Guardar la venta final*/
-        SaleEntity finalSale = saleRepository.save(sale);
+        if(item.getProductId() == null){
+            throw new SaleException("El producto es obligatorio");
+        }
 
-        /* 13. Resultado*/
-        return mapper.toResponse(finalSale);
+        if(item.getQuantity() == null || item.getQuantity() <= 0){
+            throw new SaleException("La cantidad del producto debe ser mayor a 0");
+        }
     }
+
+    private ProductEntity findProduct(Long productId){
+        return productRepository.findById(productId).orElseThrow(() -> new SaleException("Producto no encontrado: " + productId));
+    }
+
+    private void validateStock(ProductEntity product, Integer quantity){
+        if(product.getStock() < quantity){
+            throw new SaleException("Stock insuficiente para el producto: " + product.getName() + 
+            ". Disponible: " + product.getStock() + ", Solicitado: " + quantity);
+        }
+    }
+
+    private BigDecimal calculateSubtotal(ProductEntity product, Integer quantity){
+        return product.getPrice().multiply(BigDecimal.valueOf(quantity));
+    }
+
+    private SaleDetailEntity createDetail(SaleEntity sale, ProductEntity product, SaleItemRequest item, BigDecimal subtotal){
+        SaleDetailEntity detail = new SaleDetailEntity();
+        detail.setSale(sale);
+        detail.setProduct(product);
+        detail.setQuantity(item.getQuantity());
+        detail.setUnitPrice(product.getPrice());
+        detail.setSubTotal(subtotal);
+        return detail;
+    }
+
+    private void processPayment(SaleRequest request, SaleEntity sale){
+        if(request.getPaymentMethod() == PaymentMethod.CASH){
+            processCashPayment(request, sale);
+        } else if(request.getPaymentMethod() == PaymentMethod.DEBIT || request.getPaymentMethod() == PaymentMethod.CREDIT){
+            processCardPayment(request,sale);
+        } else {
+            throw new SaleException("Método de pago no soportado: " + request.getPaymentMethod());
+        }
+    }
+
+    private void processCashPayment(SaleRequest request, SaleEntity sale){
+        log.info("Procesando pago con efectivo para venta ID: {}", sale.getId());
+
+        if(request.getCashReceived() == null){
+            throw new SaleException("Debe indicar el efectivo recibido");
+        }
+
+        if(request.getCashReceived().compareTo(BigDecimal.ZERO) <= 0){
+            throw new SaleException("El efectivo recibido debe ser mayor a cero");
+        }
+
+        if(request.getCashReceived().compareTo(sale.getTotal()) <0){
+            throw new SaleException("Pago insuficiente. Total: $" + sale.getTotal() + ", Recibido: $" + request.getCashReceived());
+        }
+
+        BigDecimal change = request.getCashReceived().subtract(sale.getTotal());
+        sale.setCashReceived(request.getCashReceived());
+        sale.setChangeAmount(change);
+        sale.setPaymentStatus(PaymentStatus.APPROVED);
+
+        log.info("Pago en efectivo aprobado. Cambio: {}", change);
+    }
+
+    private void processCardPayment(SaleRequest request, SaleEntity sale){
+        log.info("Procesando pago con tarjeta para venta ID: {}", sale.getId());
+
+        //Validar datos de tarjeta
+        if(request.getCardPayment() == null){
+            throw new SaleException("Debe proporcionar datos de la tarjeta");
+        }
+
+        //GUARDAR LA VENTA ANTES DEL PAGO(necesaria para referencia)
+        //La transacción aún no se commit, pero la entidad tiene ID
+        SaleEntity savedSale = saleRepository.save(sale);
+
+        try{
+            //Preparar request para PaymentService
+            CardPaymentRequest cardRequest = request.getCardPayment();
+            cardRequest.setSaleId(savedSale.getId());
+            cardRequest.setPaymentMethod(request.getPaymentMethod());
+
+            //Procesar el pago con tarjeta
+            CardPaymentResponse paymentResponse = paymentService.processCardPayment(cardRequest);
+
+            //Actualizar estado según la respuesta
+            if(paymentResponse.getStatus() == PaymentStatus.APPROVED){
+                sale.setPaymentStatus(PaymentStatus.APPROVED);
+                sale.setCashReceived(null);
+                sale.setChangeAmount(null);
+                log.info("Pago con tarjeta aprobado. Código: {}", paymentResponse.getAuthorizationCode());
+            } else {
+                sale.setPaymentStatus(PaymentStatus.REJECTED);
+                log.warn("Pago con tarjeta rechazada: {}", paymentResponse.getMessage());
+                throw new SaleException("Pago con tarjeta rechazado: " + paymentResponse.getMessage());
+            }
+        } catch (Exception e){
+            log.error("Error en pago con tarjeta: {}", e.getMessage());
+            //Spring hará rollback automático de toda la transacción
+            //No necesitamos rollback manual
+            throw new SaleException("Error al procesar pago con tarjeta: " + e.getMessage(), e);
+        }
+    }
+
+    //===== CLASE AUXILIAR =====
+    private static class ProcessedProducts {
+        private final List<SaleDetailEntity> details;
+        private final BigDecimal total;
+
+        public ProcessedProducts(List<SaleDetailEntity> details, BigDecimal total){
+            this.details=details;
+            this.total=total;
+        }
+
+        public List<SaleDetailEntity> getDetails(){
+            return details;
+        }
+
+        public BigDecimal getTotal(){
+            return total;
+        }
+    }
+
+    //===== MÉTODOS DE CONSULTA ======
+    
 
     @Override
     public List<SaleHistoryResponse> getSales(){
