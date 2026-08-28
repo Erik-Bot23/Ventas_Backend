@@ -3,6 +3,8 @@ package com.erikjarquin.ventas.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,5 +38,22 @@ public class PaymentController {
             errorResponse.setMessage("Error al procesar el pago" + e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         }
+    }
+
+    //Consultar estado por transactionId
+    @PreAuthorize("hasAuthority('PROCESAR_PAGOS')")
+    @GetMapping("/status/{transactionId}")
+    public ResponseEntity<CardPaymentResponse> getPaymentStatus(@PathVariable String transactionId){
+        CardPaymentResponse response = paymentService.getPaymentStatus(transactionId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    //Reintentar pago
+    @PreAuthorize("hasAuthority('PROCESAR_PAGOS')")
+    @PostMapping("retry/{paymentId}")
+    public ResponseEntity<CardPaymentResponse> retryPayment(@PathVariable Long paymentId){
+        CardPaymentResponse response = paymentService.retryPayment(paymentId);
+        return ResponseEntity.ok(response);
     }
 }

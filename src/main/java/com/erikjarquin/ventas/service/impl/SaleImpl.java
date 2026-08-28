@@ -24,7 +24,6 @@ import com.erikjarquin.ventas.model.entity.SaleEntity;
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
 import com.erikjarquin.ventas.model.enums.PaymentStatus;
 import com.erikjarquin.ventas.repository.CashRegisterRepository;
-import com.erikjarquin.ventas.repository.PaymentRepository;
 import com.erikjarquin.ventas.repository.ProductRepository;
 import com.erikjarquin.ventas.repository.SaleRepository;
 import com.erikjarquin.ventas.service.PaymentService;
@@ -34,29 +33,26 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-//@Transactional
+@Transactional
 public class SaleImpl implements SaleService {
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
     private final CashRegisterRepository cashRepository;
     private final SaleMapper mapper;
     private final PaymentService paymentService;
-    private final PaymentRepository paymentRepository;
 
     public SaleImpl(
         ProductRepository productRepository,
         SaleRepository saleRepository,
         CashRegisterRepository cashRepository,
         SaleMapper mapper,
-        PaymentService paymentService,
-        PaymentRepository paymentRepository
+        PaymentService paymentService
     ){
         this.productRepository = productRepository;
         this.saleRepository = saleRepository;
         this.cashRepository = cashRepository;
         this.mapper = mapper;
         this.paymentService=paymentService;
-        this.paymentRepository=paymentRepository;
     }
 
     @Override 
@@ -231,7 +227,7 @@ public class SaleImpl implements SaleService {
             cardRequest.setSaleId(savedSale.getId());
             cardRequest.setPaymentMethod(request.getPaymentMethod());
 
-            //Procesar el pago con tarjeta
+            //Procesar el pago con tarjeta(PaymentService se encarga de la asociación bidireccional)
             CardPaymentResponse paymentResponse = paymentService.processCardPayment(cardRequest);
 
             //Actualizar estado según la respuesta
@@ -278,7 +274,6 @@ public class SaleImpl implements SaleService {
     public List<SaleHistoryResponse> getSales(){
         return saleRepository.findAll().stream().map(mapper::toHistoryResponse).toList();
     }
-
 
     @Override
     public SaleDetailHistoryResponse getSaleById(Long saleId){

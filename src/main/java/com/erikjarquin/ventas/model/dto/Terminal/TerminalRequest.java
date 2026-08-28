@@ -18,4 +18,6 @@ public class TerminalRequest {
     private String merchantId;
     private String terminalId;
     private String transactionId;
+    private String pin;
+    private String cardNumber;
 }

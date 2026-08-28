@@ -1,5 +1,6 @@
 package com.erikjarquin.ventas.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,5 +11,13 @@ import com.erikjarquin.ventas.model.enums.PaymentStatus;
 
 public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     Optional<PaymentEntity> findBySaleId(Long saleId);
-    List<PaymentEntity> findByStatus(PaymentStatus status);    
+
+    //Buscar por transactionId
+    Optional<PaymentEntity> findByTransactionId(String transactionId);
+
+    //Pagos pendientes para monitoreo
+    List<PaymentEntity> findByStatusAndQueriedFalse(PaymentStatus status);
+
+    //Pagos pendientes por más de X tiempo
+    List<PaymentEntity> findByStatusAndPaymentDateBefore(PaymentStatus status, LocalDateTime date);    
 }

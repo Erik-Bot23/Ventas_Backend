@@ -13,6 +13,7 @@ public class CardPaymentResponse {
     private String message;
     private BigDecimal amount;
     private LocalDateTime paymentDate;
+    private String transactionId;
 
     //Getter y setter de paymentId
     public Long getPaymentId(){
@@ -75,5 +76,14 @@ public class CardPaymentResponse {
 
     public void setPaymentDate(LocalDateTime paymentDate){
         this.paymentDate=paymentDate;
+    }
+
+    //Getter y setter de transactionId
+    public String getTransactionId(){
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId){
+        this.transactionId=transactionId;
     }
 }

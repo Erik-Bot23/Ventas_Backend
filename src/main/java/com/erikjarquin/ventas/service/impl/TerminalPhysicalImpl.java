@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @ConditionalOnProperty(name = "payment.terminal.type", havingValue = "PHYSICAL")
 public class TerminalPhysicalImpl implements TerminalService {
     private final TerminalConfig config;
-    private final ExecutorService excutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public TerminalResponse processPayment(TerminalRequest request){
@@ -41,7 +42,7 @@ public class TerminalPhysicalImpl implements TerminalService {
 
         try {
             // Usar timeout
-            Future<String> future = excutor.submit(() -> sendToTerminal(request));
+            Future<String> future = executor.submit(() -> sendToTerminal(request));
 
             // Esperar respuesta con timeout configurado
             String response = future.get(config.getTimeout(), TimeUnit.SECONDS);
@@ -75,27 +76,27 @@ public class TerminalPhysicalImpl implements TerminalService {
         //Protocolo seguro: Solo transactionId y amount
         String message = buildTerminalMessage(request);
         
-        try(Socket socket = new Socket(config.getHost(), config.getPort());
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-            
+        try(Socket socket = new Socket()) {
             //Configurar timeout del socket
-            socket.setSoTimeout(config.getTimeout() * 1000); //Convertir a milisegundos
-
-            // Enviar mensaje
-            out.println(message);
-            log.info("📤 Mensaje enviado: {}", message);
+            socket.connect(new InetSocketAddress(config.getHost(), config.getPort()), config.getTimeout() * 1000);
+            socket.setSoTimeout(config.getTimeout() * 1000);
             
-            // Leer en una sola línea 
-            String response = in.readLine();
-           
-            if(response == null){
-                throw new IOException("La terminal cerró la conexción sin responder");
+            try(PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))){
+                // Enviar mensaje
+                out.println(message);
+                log.info("📤 Mensaje enviado: {}", message);
+                
+                // Leer en una sola línea 
+                String response = in.readLine();
+            
+                if(response == null){
+                    throw new IOException("La terminal cerró la conexción sin responder");
+                }
+                
+                log.info("📥 Respuesta recibida: {}", response);
+                return response;
             }
-            
-            log.info("📥 Respuesta recibida: {}", response);
-            return response;
-
         } catch (SocketTimeoutException e){
             throw new IOException("Timeout esperando respueesta de la terminal " + e);
         }
@@ -112,11 +113,10 @@ public class TerminalPhysicalImpl implements TerminalService {
                         request.getTransactionId());
     }
 
-
     private TerminalResponse parseTerminalResponse(String response){
         //Parsear la respuesta de la terminal según su protocolo
-        // Ejemplo de respuesta esperada:
-        // "000|AUT20231201123456|1234|VISA|DEBIT|APROBADA"
+        //Ejemplo de respuesta esperada:
+        //"000|AUT20231201123456|1234|VISA|DEBIT|APROBADA"
         String[] parts = response.split("\\|");
 
         return TerminalResponse.builder()
@@ -135,6 +135,9 @@ public class TerminalPhysicalImpl implements TerminalService {
     @Override
     public boolean reversePayment(String transactionId){
         //Implementar reversa para la terminal física
+        
+        log.info("Reversando transacción en terminal física: {}", transactionId);
+
         try {
             //Similar a processPayment pero para cancelar
             String message = String.format("REV|%s|%s|%s",
@@ -162,6 +165,9 @@ public class TerminalPhysicalImpl implements TerminalService {
             return TerminalResponse.builder()
                     .approved(true)
                     .transactionId(transactionId)
+                    .responseCode("000")
+                    .responseMessage("TRANSACCIÓN APROBADA")
+                    .transactionDate(LocalDateTime.now())
                     .build();
         } catch (Exception e) {
             log.error("Error, consultando estado", e);

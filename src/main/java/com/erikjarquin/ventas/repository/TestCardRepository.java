@@ -4,8 +4,14 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Repository;
+
 import com.erikjarquin.ventas.model.dto.Terminal.TestCard;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Repository
 public class TestCardRepository {
     private final Map<String, TestCard> cards = new HashMap<>();
 
@@ -45,8 +51,21 @@ public class TestCardRepository {
                 .brand("AMEX")
                 .cardType("CREDIT")
                 .balance(BigDecimal.valueOf(3000))
+                .status("ACTIVE")
                 .status("0000")
-                .build());       
+                .build());   
+                
+        // Tarjeta E - Tarjeta de crédito con saldo suficiente
+        cards.put("5555555555554444", TestCard.builder()
+                .cardNumber("5555555555554444")
+                .brand("MASTERCARD")
+                .cardType("CREDIT")
+                .balance(BigDecimal.valueOf(15000))
+                .status("ACTIVE")
+                .pin("1234")
+                .build());
+
+        log.info("✅ {} tarjetas de prueba cargadas", cards.size());
     }
     
     public TestCard findByCardNumber(String cardNumber){
@@ -55,5 +74,10 @@ public class TestCardRepository {
 
     public boolean exists(String cardNumber){
         return cards.containsKey(cardNumber);
+    }
+
+    //Método para obtener todas las tarjetas (útil para frontend)
+    public Map<String, TestCard> getAllCards(){
+        return new HashMap<>();
     }
 }

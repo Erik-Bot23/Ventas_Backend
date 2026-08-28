@@ -5,4 +5,10 @@ import com.erikjarquin.ventas.model.dto.Payment.CardPaymentResponse;
 
 public interface PaymentService {
     CardPaymentResponse processCardPayment(CardPaymentRequest request);
+
+    //Consultar estado por transactionId
+    CardPaymentResponse getPaymentStatus(String transactionId);
+
+    //Reintentar pago fallido
+    CardPaymentResponse retryPayment(Long paymentId);
 } 

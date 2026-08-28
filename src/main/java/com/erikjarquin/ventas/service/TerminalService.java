@@ -9,7 +9,6 @@ public interface TerminalService {
      * @param request Datos de la transacción
      * @return Respuesta de la terminal
      */
-
     TerminalResponse processPayment(TerminalRequest request);
 
     /**
@@ -17,7 +16,6 @@ public interface TerminalService {
      * @param transactionId ID de transacción original
      * @return true si se canceló exitosamente
      */
-
     boolean reversePayment(String transactionId);
 
     /**
@@ -25,6 +23,5 @@ public interface TerminalService {
      * @param transactionId ID de transacción
      * @return Estado de la transacción
      */
-
     TerminalResponse getTransactionStatus(String transactionId);
 }

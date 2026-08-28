@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "payment.terminal.type", havingValue = "SIMULATED", matchIfMissing = true)
-public class TerminalImpl implements TerminalService {
+public class TerminalSimulatedImpl implements TerminalService {
     private final TerminalConfig config;
     private final TestCardRepository cardRepository;
     private final Random random = new Random();
@@ -57,8 +57,12 @@ public class TerminalImpl implements TerminalService {
 
     /*Procesamiento determista con tarjetas ficticias*/
     private TerminalResponse processWithTestCard(TerminalRequest request){
-        //1. Obtener tarjeta según el número (usamos un identificador basado en el transactionId)
-        String cardNumber = getCardNumberFromTransaction(request.getTransactionId());
+        //1. Usar el número de tarjeta del request si existe
+        String cardNumber = request.getTransactionId();
+        if(cardNumber == null || cardNumber.isEmpty()){
+            cardNumber = getCardNumberFromTransaction(request.getTransactionId());
+        }
+
         TestCard card = cardRepository.findByCardNumber(cardNumber);
 
         if(card == null){
@@ -88,10 +92,8 @@ public class TerminalImpl implements TerminalService {
                                     .build();
         }
 
-        //3. Validar PIN (simulado, asumimos que el cliente ingresa el PIN correcto)
-        //En simulación, asumimos que el PIN ingresado en la terminal es correcto
-        //a menos que la tarjeta tenga un PIN incorrecto configurado (para simular error)
-        if(!"1234".equals(card.getPin())){
+        //3. Validar PIN correctamente
+        if(request.getPin() != null && !request.getPin().equals(card.getPin())){
             log.warn("PIN incorrecto para tarjeta: {}", card.getCardNumber());
             return TerminalResponse.builder()
                                     .approved(false)
