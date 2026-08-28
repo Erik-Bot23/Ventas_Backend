@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.erikjarquin.ventas.exceptions.SaleException;
 import com.erikjarquin.ventas.mapper.SaleMapper;
 import com.erikjarquin.ventas.model.dto.Payment.CardPaymentRequest;
 import com.erikjarquin.ventas.model.dto.Payment.CardPaymentResponse;
@@ -272,17 +273,17 @@ public class SaleImpl implements SaleService {
     }
 
     //===== MÉTODOS DE CONSULTA ======
-    
-
     @Override
+    @Transactional(readOnly = true)
     public List<SaleHistoryResponse> getSales(){
         return saleRepository.findAll().stream().map(mapper::toHistoryResponse).toList();
     }
 
+
     @Override
     public SaleDetailHistoryResponse getSaleById(Long saleId){
         SaleEntity sale = saleRepository.findById(saleId).orElseThrow(
-            () -> new RuntimeException("Venta no encontrada"));
+            () -> new SaleException("Venta no encontrada con ID: " + saleId));
 
         return mapper.toDetailResponse(sale);
     }

@@ -52,20 +52,9 @@ public class PaymentImpl implements PaymentService {
         log.info("Procesando pago con tarjeta para la venta ID: {}", request.getSaleId());
         
         try{
-            // Validar que la venta exista
+            //Validar que la venta exista
             SaleEntity sale = saleRepository.findById(request.getSaleId()).orElseThrow(
                             () -> new PaymentException("Venta no encontrada con ID" + request.getSaleId()));
-
-            // Validar que la venta esté pendiente de pago
-            if(sale.getPaymentStatus() == PaymentStatus.APPROVED){
-                throw new PaymentException("Este venta ya fue pagada");
-            }
-
-            // Validar el método de pago
-            if(request.getPaymentMethod() != PaymentMethod.DEBIT &&
-                request.getPaymentMethod() != PaymentMethod.CREDIT){
-                    throw new PaymentException("Método de pago inválido para tarjeta");
-            }
 
             // Crear registro de pago
             PaymentEntity payment = createPendingPayment(sale, request);
