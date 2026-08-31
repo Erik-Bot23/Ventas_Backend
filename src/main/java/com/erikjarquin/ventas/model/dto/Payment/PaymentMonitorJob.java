@@ -3,6 +3,7 @@ package com.erikjarquin.ventas.model.dto.Payment;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.erikjarquin.ventas.model.entity.PaymentEntity;
@@ -16,12 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class Job {  
+public class PaymentMonitorJob {  
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
 
 
     //Ejecutar cada 5 minutos
+    @Scheduled(fixedDelay = 300000)
     public void monitorPendingPayments(){
         log.info("Monitoreando pagod pendientes...");
 

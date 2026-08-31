@@ -52,3 +52,5 @@ payment:
    keystore-password: changeit
    simulation:
     mode: DETERMINISTIC #DETERMINISTIC | RANDOM
+    failure-rate: 0.10 #10% de fallos aleatorios
+    response-delay: 500 #Delay base en ms

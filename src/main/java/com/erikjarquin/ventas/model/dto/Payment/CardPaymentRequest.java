@@ -5,6 +5,9 @@ import com.erikjarquin.ventas.model.enums.PaymentMethod;
 public class CardPaymentRequest {
     private Long saleId; //ID de la venta existente
     private PaymentMethod paymentMethod; //DEBIT o CREDIT
+    private String pin;
+    private String cardNumber;
+
 
     //Getter y setter de saleId
     public Long getSaleId(){
@@ -22,6 +25,24 @@ public class CardPaymentRequest {
 
     public void setPaymentMethod(PaymentMethod paymentMethod){
         this.paymentMethod=paymentMethod;
+    }
+
+    //Getter y setter de pin
+    public String getPin(){
+        return pin;
+    }
+
+    public void setPin(String pin){
+        this.pin=pin;
+    }
+
+    //Getter y setter de cardNumber
+    public String getCardNumber(){
+        return cardNumber;
+    }
+
+    public void setCardNumber(String cardNumber){
+        this.cardNumber=cardNumber;
     }
 
 }

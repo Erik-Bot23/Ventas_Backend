@@ -51,7 +51,7 @@ public class PaymentEntity {
     @Column(unique = true, nullable = false)
     private String transactionId; // ID de la transacción
 
-    private Integer attempCount; //Para registrar reintentos
+    private Integer attemptCount; //Para registrar reintentos
     private boolean statusQueried; //Para saber si ya se consulto el estado
     private LocalDateTime lastStatusQuery; //
     private String cardBrand; // Marca de la tarjeta (Visa, MC)
@@ -75,8 +75,8 @@ public class PaymentEntity {
         createAt = LocalDateTime.now();
         updateAt = LocalDateTime.now();
 
-        if(attempCount == null){
-            attempCount = 0;
+        if(attemptCount == null){
+            attemptCount = 0;
         }
 
         if(reversalAttempCount == null){

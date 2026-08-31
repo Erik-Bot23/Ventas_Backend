@@ -49,9 +49,7 @@ public class PaymentImpl implements PaymentService {
     @Transactional
     public CardPaymentResponse processCardPayment(CardPaymentRequest request){
         log.info("Procesando pago con tarjeta para la venta ID: {}", request.getSaleId());
-        
-        //SIN TRANSACCIONAL PROPIO (usa el de SaleImpl)
-        //SIN MANEJO DE STOCK (responsabilidad de SaleImpl)
+
         //Validar que la venta exista
         SaleEntity sale = saleRepository.findById(request.getSaleId()).orElseThrow(
                         () -> new PaymentException("Venta no encontrada con ID" + request.getSaleId()));
@@ -65,17 +63,16 @@ public class PaymentImpl implements PaymentService {
             //Si ya está aprobado, retornar éxito
             if(payment.getStatus() == PaymentStatus.APPROVED){
                 log.info("Venta ya pagada. Payment ID: {}", payment.getId());
-                return buildSuccessResponse(payment);
+                return paymentMapper.toCardPaymentResponse(payment);
             }
 
-            //Si esta pendiente, verificar si debemos consulyar estado
+            //Si esta pendiente, verificar si debemos consultar estado
             if(payment.getStatus() == PaymentStatus.PENDING){
                 //Si ya consultamos estado recientemente (últimos 30 segundos)
                 if(payment.isStatusQueried() && payment.getLastStatusQuery() != null && payment.getLastStatusQuery().isAfter(LocalDateTime.now().minusSeconds(30))){
                     log.warn("Transacción en proceso, no reintentar. TransactionId: {}", payment.getTransactionId());
                     throw new PaymentException("La transacción está en proceso. Por favor espere.");
                 }
-                
 
                 //Consultar estado actual en la terminal
                 log.info("Consultando estado de transacción pendiente: {}", payment.getTransactionId());
@@ -86,8 +83,8 @@ public class PaymentImpl implements PaymentService {
 
                 if(statusResponse.isApproved()){
                     payment.setStatus(PaymentStatus.APPROVED);
-                    payment.setAuthorizarionCode(statusResponse.getAuthorizationCode());
-                    payment.setLastfourDigits(statusResponse.getAuthorizationCode());
+                    payment.setAuthorizationCode(statusResponse.getAuthorizationCode());
+                    payment.setLastFourDigits(statusResponse.getAuthorizationCode());
                     paymentRepository.save(payment);
 
                     //Actualizar venta
@@ -96,7 +93,8 @@ public class PaymentImpl implements PaymentService {
 
                     log.info("Transacción confirmada etosamente. ID: {}", payment.getId());
 
-                    return buildSuccessResponse(payment);
+                    return paymentMapper.toCardPaymentResponse(payment);
+
                 } else {
                     //Si la terminal dice que no está aprobada, rechazar
                     payment.setStatus(PaymentStatus.REJECTED);
@@ -123,7 +121,7 @@ public class PaymentImpl implements PaymentService {
         payment.setAmount(sale.getTotal());
         payment.setStatus(PaymentStatus.PENDING);
         payment.setPaymentDate(LocalDateTime.now());
-        payment.setAttempCount(0);
+        payment.setAttemptCount(0);
         payment.setStatusQueried(false);
 
         //Generar y guardar transaction ID
@@ -153,6 +151,8 @@ public class PaymentImpl implements PaymentService {
                         .paymentMethod(request.getPaymentMethod().name())
                         .merchantId(terminalConfig.getMerchantId())
                         .terminalId(terminalConfig.getTerminalId())
+                        .pin(request.getPin())
+                        .cardNumber(request.getCardNumber())
                         .build();
 
         //Procesar con terminal
@@ -162,8 +162,8 @@ public class PaymentImpl implements PaymentService {
             //Actualizar pago según respuesta
             if(terminalResponse.isApproved()){
                 payment.setStatus(PaymentStatus.APPROVED);
-                payment.setAuthorizarionCode(terminalResponse.getAuthorizationCode());
-                payment.setLastfourDigits(terminalResponse.getLastFourDigits());
+                payment.setAuthorizationCode(terminalResponse.getAuthorizationCode());
+                payment.setLastFourDigits(terminalResponse.getLastFourDigits());
                 log.info("Pago aprobado. Código: {}", terminalResponse.getAuthorizationCode());
             } else {
                 payment.setStatus(PaymentStatus.REJECTED);
@@ -173,21 +173,22 @@ public class PaymentImpl implements PaymentService {
             }
 
             //Actualizar contador de intentos
-            payment.setAttempCount(payment.getAttempCount() + 1);
+            payment.setAttemptCount(payment.getAttemptCount() + 1);
             PaymentEntity savedPayment = paymentRepository.save(payment);
 
             //Actualizar venta
             sale.setPaymentStatus(savedPayment.getStatus());
             saleRepository.save(sale);
 
-            return buildSuccessResponse(savedPayment);
+            return paymentMapper.toCardPaymentResponse(savedPayment);
+
         } catch(Exception e) {
             log.error("Error procesando pago con terminal", e);
 
             //En caso de error, el transaction id queda persistido
             //Podemos consultar estado después
             payment.setErrorMessage("Error de comunicación: " + e.getMessage());
-            payment.setAttempCount(payment.getAttempCount() + 1);
+            payment.setAttemptCount(payment.getAttemptCount() + 1);
             paymentRepository.save(payment);
 
             throw new PaymentException("Error al procesar el pago: " + e.getMessage());
@@ -202,19 +203,6 @@ public class PaymentImpl implements PaymentService {
         String timestamp = String.valueOf(System.currentTimeMillis());
         String shortUuid = UUID.randomUUID().toString().substring(0, 8);
         return String.format("TXN-%d-%s-%s", saleId, timestamp, shortUuid);
-    }
-
-    private CardPaymentResponse buildSuccessResponse(PaymentEntity payment){
-        CardPaymentResponse response = new CardPaymentResponse();
-        response.setPaymentId(payment.getId());
-        response.setSaleId(payment.getSale().getId());
-        response.setStatus(payment.getStatus());
-        response.setAuthorizationCode(payment.getAuthorizationCode());
-        response.setAmount(payment.getAmount());
-        response.setPaymentDate(payment.getPaymentDate());
-        response.setTransactionId(payment.getTransactionId());
-        response.setMessage("Pago aprobado con éxito");
-        return response;
     }
 
     @Override
@@ -233,8 +221,8 @@ public class PaymentImpl implements PaymentService {
 
             if(statuResponse.isApproved()){
                 payment.setStatus(PaymentStatus.APPROVED);
-                payment.setAuthorizarionCode(statuResponse.getAuthorizationCode());
-                payment.setLastfourDigits(statuResponse.getLastFourDigits());
+                payment.setAuthorizationCode(statuResponse.getAuthorizationCode());
+                payment.setLastFourDigits(statuResponse.getLastFourDigits());
                 paymentRepository.save(payment);
 
                 //Actualizar venta
@@ -244,6 +232,70 @@ public class PaymentImpl implements PaymentService {
             }
         }
 
-        return buildSuccessResponse(payment);
-    } 
+        return paymentMapper.toCardPaymentResponse(payment);
+    }
+    
+    @Override
+    @Transactional
+    public CardPaymentResponse retryPayment(Long paymentId){
+        log.info("Reintentando pago ID:", paymentId);
+
+        PaymentEntity payment = paymentRepository.findById(paymentId).orElseThrow(
+            () -> new PaymentException("Pago no encontrado con ID: " + paymentId));
+
+        if(payment.getStatus() != PaymentStatus.REJECTED){
+            throw new PaymentException("Solo se pueden reintentar pagos rechazados. Estado actual: " + payment.getStatus());
+        }
+
+        if(payment.getAttemptCount() >= 3){
+            throw new PaymentException("Máximo de reintentos alcanzado (3 intentos)");
+        }
+
+        //Crear nuevo transactionId para el reintento
+        String newTransactionId = generateTransactionId(payment.getSale().getId());
+        payment.setTransactionId(newTransactionId);
+        payment.setStatus(PaymentStatus.PENDING);
+        payment.setErrorMessage(null);
+        payment.setStatusQueried(false);
+        paymentRepository.save(payment);
+
+        //Reintentar el pago
+        CardPaymentRequest retryRequest = new CardPaymentRequest();
+        retryRequest.setSaleId(payment.getSale().getId());
+        retryRequest.setPaymentMethod(payment.getPaymentMethod());
+
+        return processCardPayment(retryRequest);
+    }
+
+    @Override
+    @Transactional
+    public boolean reversePayment(Long paymentId){
+        log.info("Reversando pago ID: {}", paymentId);
+
+        PaymentEntity payment = paymentRepository.findById(paymentId).orElseThrow(
+            () -> new PaymentException("Pago no encotrado con ID: " + paymentId));
+
+        if(payment.getStatus() != PaymentStatus.APPROVED){
+            throw new PaymentException("Solo se pueden reversar pagos aprobados. Estado actual: " + payment.getStatus());
+        }
+
+        boolean reversed = terminalService.reversePayment(payment.getTransactionId());
+
+        if(reversed){
+            payment.setStatus(PaymentStatus.REVERSED);
+            payment.setReversalDate(LocalDateTime.now());
+            payment.setReversalReason("Reversa manual solicitada");
+            paymentRepository.save(payment);
+
+            SaleEntity sale = payment.getSale();
+            sale.setPaymentStatus(PaymentStatus.REVERSED);
+            saleRepository.save(sale);
+
+            log.info("Pago reversado exitosament: {}", paymentId);
+            return true;
+        }
+
+        log.error("Error al reversar pago: {}", paymentId);
+        return false;
+    }
 }

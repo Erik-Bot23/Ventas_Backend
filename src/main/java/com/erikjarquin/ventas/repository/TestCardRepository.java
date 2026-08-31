@@ -52,7 +52,7 @@ public class TestCardRepository {
                 .cardType("CREDIT")
                 .balance(BigDecimal.valueOf(3000))
                 .status("ACTIVE")
-                .status("0000")
+                .pin("0000")
                 .build());   
                 
         // Tarjeta E - Tarjeta de crédito con saldo suficiente
@@ -65,7 +65,7 @@ public class TestCardRepository {
                 .pin("1234")
                 .build());
 
-        log.info("✅ {} tarjetas de prueba cargadas", cards.size());
+        log.info("{} tarjetas de prueba cargadas", cards.size());
     }
     
     public TestCard findByCardNumber(String cardNumber){
@@ -78,6 +78,6 @@ public class TestCardRepository {
 
     //Método para obtener todas las tarjetas (útil para frontend)
     public Map<String, TestCard> getAllCards(){
-        return new HashMap<>();
+        return new HashMap<>(cards);
     }
 }

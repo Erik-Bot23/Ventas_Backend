@@ -3,6 +3,7 @@ package com.erikjarquin.ventas.service.impl;
 import java.time.LocalDateTime;
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +27,14 @@ public class TerminalSimulatedImpl implements TerminalService {
     private final Random random = new Random();
 
     //Modo de simulación: "DETERMINISTIC" o "RANDOM"
-    private static final String SIMULATION_MODE = System.getProperty("payment.terminal.simulation.mode", "DETERMINISTIC");
+    @Value("${payment.terminal.simulation.mode:DETERMINISTIC}")
+    private String simulationMode;
+    //private static final String SIMULATION_MODE = System.getProperty("payment.terminal.simulation.mode", "DETERMINISTIC");
     
     @Override
     public TerminalResponse processPayment(TerminalRequest request){
         log.info("[Terminal simulada] Procesando pago para venta ID: {}", request.getSaleId());
-        log.info("Monto: ${}, Modo: {}", request.getAmount(), SIMULATION_MODE);
+        log.info("Monto: ${}, Modo: {}", request.getAmount(), simulationMode);
 
         //Simular tiempo de procesamiento (con timeout)
         try{
@@ -47,7 +50,7 @@ public class TerminalSimulatedImpl implements TerminalService {
         }
 
         //Si el modo es DETERMINISTIC, user tarejtas ficticias
-        if("DETERMINISTIC".equalsIgnoreCase(SIMULATION_MODE)){
+        if("DETERMINISTIC".equalsIgnoreCase(simulationMode)){
             return processWithTestCard(request);
         } else {
             //Modo RANDOM (aleatorio) - comportamiento original
@@ -58,7 +61,7 @@ public class TerminalSimulatedImpl implements TerminalService {
     /*Procesamiento determista con tarjetas ficticias*/
     private TerminalResponse processWithTestCard(TerminalRequest request){
         //1. Usar el número de tarjeta del request si existe
-        String cardNumber = request.getTransactionId();
+        String cardNumber = request.getCardNumber();
         if(cardNumber == null || cardNumber.isEmpty()){
             cardNumber = getCardNumberFromTransaction(request.getTransactionId());
         }

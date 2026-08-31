@@ -11,4 +11,7 @@ public interface PaymentService {
 
     //Reintentar pago fallido
     CardPaymentResponse retryPayment(Long paymentId);
+
+    //Método de reversa
+    boolean reversePayment(Long paymentId);
 } 

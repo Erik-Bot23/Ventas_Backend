@@ -10,7 +10,7 @@ import lombok.Data;
 //@Configuration
 @ConfigurationProperties(prefix = "payment.terminal")
 public class TerminalConfig {
-    private String type; //"PHYSUCAL", "SIMULATED"
+    private String type; //"PHYSICAL", "SIMULATED"
     private String host; //Ip de la terminal
     private int port; //Puerto
     private String merchantId; // ID del comercio

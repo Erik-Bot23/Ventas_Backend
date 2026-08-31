@@ -16,7 +16,7 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     Optional<PaymentEntity> findByTransactionId(String transactionId);
 
     //Pagos pendientes para monitoreo
-    List<PaymentEntity> findByStatusAndQueriedFalse(PaymentStatus status);
+    List<PaymentEntity> findByStatusAndStatusQueriedFalse(PaymentStatus status);
 
     //Pagos pendientes por más de X tiempo
     List<PaymentEntity> findByStatusAndPaymentDateBefore(PaymentStatus status, LocalDateTime date);    
