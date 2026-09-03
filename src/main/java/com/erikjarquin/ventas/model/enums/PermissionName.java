@@ -51,5 +51,8 @@ public enum PermissionName {
 
     //Configuración
     VER_CONFIGURACION,
-    EDITAR_CONFIGURACION
+    EDITAR_CONFIGURACION,
+
+    //Pagos
+    PROCESAR_PAGOS
 }

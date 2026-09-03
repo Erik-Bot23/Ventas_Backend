@@ -62,6 +62,24 @@ public class TerminalSimulatedImpl implements TerminalService {
     private TerminalResponse processWithTestCard(TerminalRequest request){
         //1. Usar el número de tarjeta del request si existe
         String cardNumber = request.getCardNumber();
+
+        if(cardNumber != null){
+            cardNumber = cardNumber.replaceAll("\\s+", ""); //Eliminar todos los espacios
+        }
+
+        if(cardNumber == null || cardNumber.isEmpty()){
+            log.warn("No se proporcionó número de tarjeta");
+
+            return TerminalResponse.builder()
+                    .approved(false)
+                    .responseCode("099")
+                    .responseMessage("TARJETA NO PROPORCIONADA")
+                    .errorMessage("Debe proporcionar un número de tarjeta")
+                    .transactionDate(LocalDateTime.now())
+                    .transactionId(request.getTransactionId())
+                    .build();
+        }
+
         if(cardNumber == null || cardNumber.isEmpty()){
             cardNumber = getCardNumberFromTransaction(request.getTransactionId());
         }
