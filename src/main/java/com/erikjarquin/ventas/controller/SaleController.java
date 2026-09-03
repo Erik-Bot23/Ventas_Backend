@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,9 @@ public class SaleController {
 
     @PreAuthorize("hasAuthority('CREAR_VENTAS')")
     @PostMapping
-    public SaleResponse processSale(@RequestBody SaleRequest request){
-        return service.processSale(request);
+    public ResponseEntity<SaleResponse> processSale(@RequestBody SaleRequest request){
+        SaleResponse response = service.processSale(request);
+        return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasAuthority('VER_VENTAS')")
@@ -43,6 +45,5 @@ public class SaleController {
     @GetMapping("/{id}")
     public SaleDetailHistoryResponse getSaleById(@PathVariable Long id){
         return service.getSaleById(id);
-    }
-    
+    }  
 }

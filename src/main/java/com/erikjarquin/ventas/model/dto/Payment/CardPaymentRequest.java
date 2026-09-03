@@ -8,7 +8,6 @@ public class CardPaymentRequest {
     private String pin;
     private String cardNumber;
 
-
     //Getter y setter de saleId
     public Long getSaleId(){
         return saleId;
@@ -44,5 +43,4 @@ public class CardPaymentRequest {
     public void setCardNumber(String cardNumber){
         this.cardNumber=cardNumber;
     }
-
 }

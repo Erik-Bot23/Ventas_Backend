@@ -16,6 +16,7 @@ public class PaymentMapper {
         response.setAuthorizationCode(payment.getAuthorizationCode());
         response.setAmount(payment.getAmount());
         response.setPaymentDate(payment.getPaymentDate());
+        response.setTransactionId(payment.getTransactionId());
 
         //Mensaje según el estado
         if(payment.getStatus() == PaymentStatus.APPROVED){
