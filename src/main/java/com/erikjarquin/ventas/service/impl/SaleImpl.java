@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.erikjarquin.ventas.exceptions.PaymentException;
 import com.erikjarquin.ventas.exceptions.SaleException;
 import com.erikjarquin.ventas.mapper.SaleMapper;
 import com.erikjarquin.ventas.model.dto.Payment.CardPaymentRequest;
@@ -218,7 +219,6 @@ public class SaleImpl implements SaleService {
         }
 
         //GUARDAR LA VENTA ANTES DEL PAGO(necesaria para referencia)
-        //La transacción aún no se commit, pero la entidad tiene ID
         SaleEntity savedSale = saleRepository.save(sale);
 
         try{
@@ -239,10 +239,14 @@ public class SaleImpl implements SaleService {
             } else {
                 sale.setPaymentStatus(PaymentStatus.REJECTED);
                 log.warn("Pago con tarjeta rechazada: {}", paymentResponse.getMessage());
-                throw new SaleException("Pago con tarjeta rechazado: " + paymentResponse.getMessage());
+                throw new PaymentException("Pago con tarjeta rechazado: " + paymentResponse.getMessage());
             }
-        } catch (Exception e){
+        } catch (PaymentException e){
+            //Relanzamos la excepción original sin convertirla
             log.error("Error en pago con tarjeta: {}", e.getMessage());
+            throw e;
+        } catch (Exception e){
+            log.error("Error inesperado en pago con tarjeta: {}", e.getMessage());
             //Spring hará rollback automático de toda la transacción
             //No necesitamos rollback manual
             throw new SaleException("Error al procesar pago con tarjeta: " + e.getMessage(), e);
