@@ -60,6 +60,12 @@ public class TerminalSimulatedImpl implements TerminalService {
 
     /*Procesamiento determista con tarjetas ficticias*/
     private TerminalResponse processWithTestCard(TerminalRequest request){
+        log.info("=== PROCESANDO CON TARJETA DE PRUEBA ===");
+        log.info("CardNumber recibido: '{}'", request.getCardNumber());
+        log.info("PIN recibido: '{}'", request.getPin());
+        log.info("Monto: {}", request.getAmount());
+        log.info("TransactionId: {}", request.getTransactionId());
+        
         //1. Usar el número de tarjeta del request si existe
         String cardNumber = request.getCardNumber();
 

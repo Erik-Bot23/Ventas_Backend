@@ -25,12 +25,18 @@ public class AdminBootstrap implements CommandLineRunner {
         this.roleRepository=roleRepository;
     }
 
+    //Se crear el primer usuario
     @Override
     public void run(String... args){
         String adminEmail = "18jarquinsanchezerik1a@gmail.com";
+        //findByEmail
+        //isPresent
         boolean exists = userRepository.findByEmail(adminEmail).isPresent();
 
+        //exists
         if(!exists){
+            //orElseThrow
+            //RuntimeException
             RoleEntity adminRole = roleRepository.findByName("ADMIN").orElseThrow(() ->
                 new RuntimeException("Rol ADMIN no encontrado"));
 

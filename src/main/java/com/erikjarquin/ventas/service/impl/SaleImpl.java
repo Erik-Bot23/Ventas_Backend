@@ -61,29 +61,70 @@ public class SaleImpl implements SaleService {
     public SaleResponse processSale(SaleRequest request){
         log.info("Iniciando proceso de venta. Método de pago: {}", request.getPaymentMethod());
 
-        /* 1. VALIDACIONES INICIALES */
+        /*VALIDACIONES INICIALES */
         validateRequest(request);
 
-        /* 2. VERIFICAR CAJA ABIERTA*/
+        /*VERIFICAR CAJA ABIERTA*/
         CashRegisterEntity cash = getActiveCashRegister();
 
-        /* 3. CREAR VENTA (sin detalles todavía) */
+        /*CREAR VENTA (sin detalles todavía) */
         SaleEntity sale = createBaseSale(request, cash);
+        sale.setPaymentStatus(PaymentStatus.PENDING); //Estado inicial
 
-        /* 4. PROCESAR PRODUCTOS Y CALCULAR TOTAL */
-        ProcessedProducts processed = processProducts(request.getItems(), sale);
-        sale.setDetails(processed.getDetails());
-        sale.setTotal(processed.getTotal());
-
-        /* 5. PROCESAR PAGO SEGÚN MÉTODO */
-        processPayment(request, sale);
-
-        /* 6. GUARDAR VENTA COMPLETA */
+        //Guardar a venta para obtener un ID
         SaleEntity savedSale = saleRepository.save(sale);
+        log.info("Venta creada con ID: {} (estado PENDING)", savedSale.getId());
+
+        /*PROCESAR PRODUCTOS Y CALCULAR TOTAL */
+        ProcessedProducts processed = processProductsInMemory(request.getItems(), sale);
+        savedSale.setDetails(processed.getDetails());
+        savedSale.setTotal(processed.getTotal());
+
+        //Actualizar la venta con el total calculado
+        saleRepository.save(savedSale);
+
+        //Procesar pago según el método y guardar la respuesta
+        CardPaymentResponse paymentResponse = null;
+
+        if(request.getPaymentMethod() == PaymentMethod.CASH){
+            //Procesar pago en efectivo
+            processCashPayment(request, savedSale);
+        } else if(request.getPaymentMethod() == PaymentMethod.DEBIT || request.getPaymentMethod() == PaymentMethod.CREDIT){
+            //Procesar pago con tarjeta y guardar respuesta
+            paymentResponse = processCardPaymentWithResponse(request, savedSale);
+        } else {
+            throw new SaleException("Método de pago no soportado: " + request.getPaymentMethod());
+        }
+
+        /* PROCESAR PAGO SEGÚN MÉTODO */
+        //processPayment(request, savedSale);
+
+        /* Solo si llegamos aquí, el pago fue exitoso*/
+        // a) Guardar la venta
+        savedSale.setPaymentStatus(PaymentStatus.APPROVED);
+
+        // b) Descomyar de stock
+        for(SaleDetailEntity detail : savedSale.getDetails()){
+            ProductEntity product = detail.getProduct();
+            product.setStock(product.getStock() - detail.getQuantity());
+            productRepository.save(product);
+        }
+
+        SaleEntity finalSale = saleRepository.save(savedSale);
+
         log.info("Venta completada exitosamente. ID: {}, Total: ${}", savedSale.getId(), savedSale.getTotal());
 
-        /* RETORNAR RESPUESTA */
-        return mapper.toResponse(savedSale);
+        /* RETORNAR RESPUESTA CON DATOS DE TARJETA SI APLICA */
+        SaleResponse response = mapper.toResponse(finalSale);
+        
+        // Si fue pago con tarjeta, incluir los datos de la respuesta del pago
+        if(paymentResponse != null){
+            response.setCardPaymentResponse(paymentResponse);
+            response.setAuthorizationCode(paymentResponse.getAuthorizationCode());
+            response.setLastFourDigits(paymentResponse.getLastFourDigits());
+        }
+        
+        return response;
     }
 
     // ====== Métodos privados =====
@@ -114,6 +155,7 @@ public class SaleImpl implements SaleService {
         return sale;
     }
 
+    /* Ya no se utiliza */
     private ProcessedProducts processProducts(List<SaleItemRequest> items, SaleEntity sale){
         List<SaleDetailEntity> details = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -136,6 +178,70 @@ public class SaleImpl implements SaleService {
         }
 
         return new ProcessedProducts(details, total);
+    }
+
+    /* Revisar */
+    private CardPaymentResponse processCardPaymentWithResponse(SaleRequest request, SaleEntity sale){
+        log.info("Procesando pago con tarjeta para venta ID: {}", sale.getId());
+
+        if(request.getCardPayment() == null){
+            throw new SaleException("Debe proporcionar datos de la tarjeta");
+        }
+
+        try{
+            // Preparar request para PaymentService
+            CardPaymentRequest cardRequest = request.getCardPayment();
+            cardRequest.setSaleId(sale.getId()); // Ya tiene ID porque guardamos antes
+            cardRequest.setPaymentMethod(request.getPaymentMethod());
+
+            // Procesar el pago con tarjeta
+            CardPaymentResponse paymentResponse = paymentService.processCardPayment(cardRequest);
+
+            // Verificar si fue aprobado
+            if(paymentResponse.getStatus() == PaymentStatus.APPROVED){
+                log.info("Pago con tarjeta aprobado. Código: {}", paymentResponse.getAuthorizationCode());
+                return paymentResponse;
+            } else {
+                // Si no fue aprobado, marcar como rechazado y lanzar excepción
+                sale.setPaymentStatus(PaymentStatus.REJECTED);
+                saleRepository.save(sale);
+                throw new PaymentException("Pago con tarjeta rechazado: " + paymentResponse.getMessage());
+            }
+
+        } catch (PaymentException e){
+            log.error("Error en pago con tarjeta: {}", e.getMessage());
+            // Marcar la venta como rechazada
+            sale.setPaymentStatus(PaymentStatus.REJECTED);
+            saleRepository.save(sale);
+            throw e; // Relanzar para rollback
+        } catch (Exception e){
+            log.error("Error inesperado en pago con tarjeta: {}", e.getMessage());
+            sale.setPaymentStatus(PaymentStatus.REJECTED);
+            saleRepository.save(sale);
+            throw new SaleException("Error al procesar pago con tarjeta: " + e.getMessage(), e);
+        }
+    }
+
+    //No se guarda la venta en BD solo se calcula
+    private ProcessedProducts processProductsInMemory(List<SaleItemRequest> items, SaleEntity sale){
+        List<SaleDetailEntity> details = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for(SaleItemRequest item : items){
+            validateItem(item);
+            ProductEntity product = findProduct(item.getProductId());
+            validateStock(product, item.getQuantity());
+
+            //Solo calcular, no guardar
+            BigDecimal subtotal = calculateSubtotal(product, item.getQuantity());
+            total = total.add(subtotal);
+
+            SaleDetailEntity detail = createDetail(sale, product, item, subtotal);
+            details.add(detail);
+        }
+
+        return new ProcessedProducts(details, total);
+
     }
 
     private void validateItem(SaleItemRequest item){
@@ -177,6 +283,7 @@ public class SaleImpl implements SaleService {
         return detail;
     }
 
+    /* Ya no se utiliza de momento */
     private void processPayment(SaleRequest request, SaleEntity sale){
         if(request.getPaymentMethod() == PaymentMethod.CASH){
             processCashPayment(request, sale);
@@ -219,12 +326,12 @@ public class SaleImpl implements SaleService {
         }
 
         //GUARDAR LA VENTA ANTES DEL PAGO(necesaria para referencia)
-        SaleEntity savedSale = saleRepository.save(sale);
+        //SaleEntity savedSale = saleRepository.save(sale);
 
         try{
             //Preparar request para PaymentService
             CardPaymentRequest cardRequest = request.getCardPayment();
-            cardRequest.setSaleId(savedSale.getId());
+            cardRequest.setSaleId(sale.getId());
             cardRequest.setPaymentMethod(request.getPaymentMethod());
 
             //Procesar el pago con tarjeta(PaymentService se encarga de la asociación bidireccional)
@@ -237,18 +344,22 @@ public class SaleImpl implements SaleService {
                 sale.setChangeAmount(null);
                 log.info("Pago con tarjeta aprobado. Código: {}", paymentResponse.getAuthorizationCode());
             } else {
-                sale.setPaymentStatus(PaymentStatus.REJECTED);
-                log.warn("Pago con tarjeta rechazada: {}", paymentResponse.getMessage());
                 throw new PaymentException("Pago con tarjeta rechazado: " + paymentResponse.getMessage());
             }
         } catch (PaymentException e){
             //Relanzamos la excepción original sin convertirla
             log.error("Error en pago con tarjeta: {}", e.getMessage());
+            
+            sale.setPaymentStatus(PaymentStatus.REJECTED);
+            saleRepository.save(sale);
             throw e;
         } catch (Exception e){
             log.error("Error inesperado en pago con tarjeta: {}", e.getMessage());
+            
             //Spring hará rollback automático de toda la transacción
             //No necesitamos rollback manual
+            sale.setPaymentStatus(PaymentStatus.REJECTED);
+            saleRepository.save(sale);
             throw new SaleException("Error al procesar pago con tarjeta: " + e.getMessage(), e);
         }
     }

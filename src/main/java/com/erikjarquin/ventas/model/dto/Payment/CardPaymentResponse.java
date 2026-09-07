@@ -14,6 +14,7 @@ public class CardPaymentResponse {
     private BigDecimal amount;
     private LocalDateTime paymentDate;
     private String transactionId;
+    private String lastFourDigits; // Últimos 4 digitos de la tarjeta
 
     //Getter y setter de paymentId
     public Long getPaymentId(){
@@ -85,5 +86,14 @@ public class CardPaymentResponse {
 
     public void setTransactionId(String transactionId){
         this.transactionId=transactionId;
+    }
+
+    //Getter y setter de lastFourDigits
+    public String getLastFourDigits(){
+        return lastFourDigits;
+    }
+
+    public void setLastFourDigits(String lasrFourDigits){
+        this.lastFourDigits=lasrFourDigits;
     }
 }

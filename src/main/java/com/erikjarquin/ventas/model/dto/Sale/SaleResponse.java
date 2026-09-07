@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.model.dto.Sale;
 
 import java.math.BigDecimal;
 
+import com.erikjarquin.ventas.model.dto.Payment.CardPaymentResponse;
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
 import com.erikjarquin.ventas.model.enums.PaymentStatus;
 
@@ -15,6 +16,7 @@ public class SaleResponse {
     private String lastFourDigits; // Últimos 4 digitos de la tarjeta
     private String authorizationCode; // Código de autorización
     private String erroMessage; // Si fue rechazado
+    private CardPaymentResponse cardPaymentResponse;
 
     public SaleResponse(){}
 
@@ -99,5 +101,12 @@ public class SaleResponse {
         this.erroMessage=errorMessage;
     }
 
+    //Getter y setter de cardPaymentResponse
+    public CardPaymentResponse getCardPaymentResponse(){
+        return cardPaymentResponse;
+    }
 
+    public void setCardPaymentResponse(CardPaymentResponse cardPaymentResponse){
+        this.cardPaymentResponse=cardPaymentResponse;
+    }
 }
