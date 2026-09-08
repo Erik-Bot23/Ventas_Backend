@@ -19,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-@ConditionalOnProperty(name = "payment.terminal.type", havingValue = "SIMULATED", matchIfMissing = true)
+@RequiredArgsConstructor //
+@ConditionalOnProperty(name = "payment.terminal.type", havingValue = "SIMULATED", matchIfMissing = true) //
 public class TerminalSimulatedImpl implements TerminalService {
     private final TerminalConfig config;
     private final TestCardRepository cardRepository;
@@ -29,7 +29,6 @@ public class TerminalSimulatedImpl implements TerminalService {
     //Modo de simulación: "DETERMINISTIC" o "RANDOM"
     @Value("${payment.terminal.simulation.mode:DETERMINISTIC}")
     private String simulationMode;
-    //private static final String SIMULATION_MODE = System.getProperty("payment.terminal.simulation.mode", "DETERMINISTIC");
     
     @Override
     public TerminalResponse processPayment(TerminalRequest request){
@@ -66,7 +65,7 @@ public class TerminalSimulatedImpl implements TerminalService {
         log.info("Monto: {}", request.getAmount());
         log.info("TransactionId: {}", request.getTransactionId());
         
-        //1. Usar el número de tarjeta del request si existe
+        //Usar el número de tarjeta del request si existe
         String cardNumber = request.getCardNumber();
 
         if(cardNumber != null){
@@ -106,7 +105,7 @@ public class TerminalSimulatedImpl implements TerminalService {
 
         log.info("Tarjeta seleccionada: {} - Status: {}, Balance: ${}", card.getCardNumber(), card.getStatus(), card.getBalance());
 
-        //2. Validar estado de la tarjeta
+        //Validar estado de la tarjeta
         if("BLOCKED".equalsIgnoreCase(card.getStatus())){
             log.warn("Tarjeta bloqueada");
             return TerminalResponse.builder()
@@ -119,7 +118,7 @@ public class TerminalSimulatedImpl implements TerminalService {
                                     .build();
         }
 
-        //3. Validar PIN correctamente
+        //Validar PIN correctamente
         if(request.getPin() != null && !request.getPin().equals(card.getPin())){
             log.warn("PIN incorrecto para tarjeta: {}", card.getCardNumber());
             return TerminalResponse.builder()
@@ -132,7 +131,7 @@ public class TerminalSimulatedImpl implements TerminalService {
                                     .build();
         }
 
-        //4. Validar saldo insuficiente
+        //Validar saldo insuficiente
         if(card.getBalance().compareTo(request.getAmount()) < 0){
             log.warn("Saldo insuficiente: Disponible ${}, Necesario ${}", card.getBalance(), request.getAmount());
             return TerminalResponse.builder()
@@ -145,7 +144,7 @@ public class TerminalSimulatedImpl implements TerminalService {
                                     .build();
         }
 
-        //5. Simular comunicación con el banco (solo para darle realismo)
+        //Simular comunicación con el banco (solo para darle realismo)
         if(!simulateBankCommunication()){
             return TerminalResponse.builder()
                                     .approved(false)
@@ -229,15 +228,18 @@ public class TerminalSimulatedImpl implements TerminalService {
         return cardNumbers[index];
     }
 
+    //Simula la comunicación con el banco
     private boolean simulateBankCommunication(){
         //Simulación: 98% de comunicación
         return random.nextDouble() < 0.98;
     }
 
+    //Genera código de autorización
     private String generateAuthorizationCode(){
         return "AUT" + System.currentTimeMillis() + String.format("%04d", random.nextInt(10000));
     }
 
+    //Obtiene los últimos 4 dígitos de la tarjerta
     private String getLastFourDigits(String cardNumber){
         if(cardNumber == null || cardNumber.length() < 4){
             return "****";
@@ -245,6 +247,7 @@ public class TerminalSimulatedImpl implements TerminalService {
         return cardNumber.substring(cardNumber.length() - 4);
     }
 
+    //Regresar el pago
     @Override
     public boolean reversePayment(String transactionId){
         log.info("Reversando transacción: {}", transactionId);
@@ -253,6 +256,7 @@ public class TerminalSimulatedImpl implements TerminalService {
         return true;
     }
 
+    //Estatus de la transacción
     @Override
     public TerminalResponse getTransactionStatus(String transactionId){
         log.info("Consultando estado de la transacción: {}", transactionId);

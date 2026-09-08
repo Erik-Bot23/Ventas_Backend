@@ -15,7 +15,6 @@ import com.erikjarquin.ventas.repository.RoleRepository;
 import com.erikjarquin.ventas.repository.UserRepository;
 import com.erikjarquin.ventas.service.UserService;
 
-//Modulo de usuarios completo y carpetas corregidas
 @Service
 public class UserImpl implements UserService {
     private final UserRepository repository;
@@ -30,11 +29,13 @@ public class UserImpl implements UserService {
         this.roleRepository=roleRepository;
     }
 
+    //Ver usuarios
    @Override
     public List<UserDto> getAllUsers() {
         return repository.findAll().stream().map(UserMapper::toDto).toList();
     }
 
+    //Crear usuario
     @Override
     public UserDto createUser(CreateUserRequest request){
         UserEntity user = new UserEntity();
@@ -55,9 +56,9 @@ public class UserImpl implements UserService {
         UserEntity saved = repository.save(user);
 
         return UserMapper.toDto(saved);
-
     }
 
+    //Actualizar usuario
     @Override
     public UserDto updateUser(Long id, UpdateUserRequest request) {
         UserEntity user = repository.findById(id).orElseThrow(() ->
@@ -69,13 +70,12 @@ public class UserImpl implements UserService {
         RoleEntity role = roleRepository.findById(request.getRoleId()).orElseThrow(() -> 
             new RuntimeException("Rol no encontrado"));
         user.setRole(role);
-        //Quitar esta línea para evitar el false en active al actualizar
-        //user.setActive(request.isActive());
         UserEntity updated = repository.save(user);
 
         return UserMapper.toDto(updated);
     }
 
+    //Desactivar usuario
     @Override
     public void deactivateUser(Long id) {
         UserEntity user = repository.findById(id).orElseThrow(() ->
@@ -85,6 +85,7 @@ public class UserImpl implements UserService {
         repository.save(user);
     }
 
+    //Activar usuario
     @Override
     public void activateUser(Long id){
         UserEntity user = repository.findById(id).orElseThrow(() ->

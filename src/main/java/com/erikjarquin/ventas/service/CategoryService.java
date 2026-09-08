@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.erikjarquin.ventas.model.dto.Categories.CategoryDto;
 
+//Service para categorias
 public interface CategoryService {
     List<CategoryDto> getAll();
     CategoryDto save(CategoryDto dto);

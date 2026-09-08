@@ -28,12 +28,14 @@ public class RoleImpl implements RoleService {
         this.permissionRepository=permissionRepository;
     }
 
+    //Mostrar todos los roles
     @Override
     @Transactional(readOnly = true)
     public List<RoleDto> getAllRoles(){
         return repository.findAll().stream().map(RoleMapper::toDto).toList();
     }
 
+    //Buscar role por ID
     @Override
     @Transactional(readOnly = true)
     public RoleDto getRoleById(Long id){
@@ -42,6 +44,7 @@ public class RoleImpl implements RoleService {
         return RoleMapper.toDto(role);
     }
 
+    //Crear role
     @Override
     public RoleDto createRole(CreateRoleRequest request){
         validateRoleName(request.getName());
@@ -61,6 +64,7 @@ public class RoleImpl implements RoleService {
         return RoleMapper.toDto(saved);
     }
 
+    //Actualizar role
     @Override
     public RoleDto updateRole(Long id, UpdateRoleRequest request){
         RoleEntity role = repository.findById(id).orElseThrow(() -> new RuntimeException("Rol no encontrado"));
@@ -80,6 +84,7 @@ public class RoleImpl implements RoleService {
         return RoleMapper.toDto(updated);
     }
 
+    //Eliminar role
     @Override
     public void deleteRole(Long id){
         RoleEntity role = repository.findById(id).orElseThrow(() -> 
@@ -91,7 +96,9 @@ public class RoleImpl implements RoleService {
         repository.deleteById(id);
     }
 
+    //Encontrar permisos
     private Set<PermissionEntity> findPermissions(List<String> permissionNames){
+        //
         if(permissionNames == null || permissionNames.isEmpty()){
             return new HashSet<>();
         }
@@ -106,6 +113,7 @@ public class RoleImpl implements RoleService {
         return new HashSet<>(permissions);
     }
 
+    //Revisar que un permiso sea válido
     private PermissionName parsePermission(String permission){
         try {
             return PermissionName.valueOf(permission);
@@ -114,6 +122,7 @@ public class RoleImpl implements RoleService {
         }
     }
 
+    //Validar que se le asigne nombre al rol
     private void validateRoleName(String name){
         if(name == null || name.trim().isEmpty()){
             throw new RuntimeException("El nombre del rol es obligatorio");

@@ -11,7 +11,7 @@ import com.erikjarquin.ventas.model.entity.CategoryEntity;
 import com.erikjarquin.ventas.repository.CategoryRepository;
 import com.erikjarquin.ventas.service.CategoryService;
 
-@Service
+@Service //
 public class CategoryImpl implements CategoryService {
     private final CategoryRepository repository;
 
@@ -19,14 +19,16 @@ public class CategoryImpl implements CategoryService {
         this.repository=repository;
     }
 
+    //Mostrar todas las categorías
     @Override
     public List<CategoryDto> getAll(){
         return repository.findAll()
                 .stream()
                 .map(CategoryMapper::toDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); //collect: 
     }
 
+    //Guaradar la nueva categoría
     @Override
     public CategoryDto save(CategoryDto dto){
         CategoryEntity entity = CategoryMapper.toEntity(dto);
@@ -35,6 +37,7 @@ public class CategoryImpl implements CategoryService {
         return CategoryMapper.toDto(saved);
     }
 
+    //Borrar la categoría
     @Override
     public void delete(Long id){
         CategoryEntity category = repository.findById(id).orElseThrow(() ->

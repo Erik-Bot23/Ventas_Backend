@@ -11,14 +11,16 @@ import com.erikjarquin.ventas.repository.PermissionRepository;
 import com.erikjarquin.ventas.service.PermissionService;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional(readOnly = true) //
 public class PermissionImpl implements PermissionService {
     private final PermissionRepository permissionRepository;
 
+    //Constructor
     public PermissionImpl(PermissionRepository permissionRepository){
         this.permissionRepository=permissionRepository;
     }
 
+    //Ver todos los permisos
     @Override
     public List<PermissionResponse> getAllPermissions() {
         return permissionRepository.findAll().stream()

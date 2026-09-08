@@ -8,10 +8,9 @@ import com.erikjarquin.ventas.model.dto.Sale.SaleHistoryResponse;
 import com.erikjarquin.ventas.model.dto.Sale.SaleRequest;
 import com.erikjarquin.ventas.model.dto.Sale.SaleResponse;
 
+//Service de sale
 public interface SaleService {
     SaleResponse processSale(SaleRequest request);
-
-    List<SaleHistoryResponse> getSales();
-    
+    List<SaleHistoryResponse> getSales(); 
     SaleDetailHistoryResponse getSaleById(Long saleId);
 }

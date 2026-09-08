@@ -7,10 +7,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.erikjarquin.ventas.model.dto.Products.ProductDto;
 
+//Service de productos
 public interface ProductService {
+    //Listar todos los productos
     List<ProductDto> getAll();
+    //Filtrar por categoría
     List<ProductDto> getByCategory(String category); //¿Long categoryId?
     
+    //Guardar producto
     ProductDto save(
         String name,
         BigDecimal price,
@@ -20,7 +24,7 @@ public interface ProductService {
         String barcode,
         MultipartFile image
     );
-
+    //Actualizar producto
     ProductDto update(
         Long id,
         String name,
@@ -33,8 +37,8 @@ public interface ProductService {
     );
 
     void delete(Long id);
-
+    //Buscar por código de barras
     ProductDto findByBarcode(String barcode);
-
+    //Acción de buscador
     List<ProductDto> search(String q);
 } 

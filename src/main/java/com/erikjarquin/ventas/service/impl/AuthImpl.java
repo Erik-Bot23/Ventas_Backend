@@ -19,14 +19,14 @@ import com.erikjarquin.ventas.repository.UserRepository;
 import com.erikjarquin.ventas.service.AuthService;
 import com.erikjarquin.ventas.service.EmailService;
 
-@Service
+@Service //
 public class AuthImpl implements AuthService {
     private final UserRepository repo;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
 
-    @Value("${app.frontend-url}")
+    @Value("${app.frontend-url}") //
     private String frontendUrl;
 
     public AuthImpl(
@@ -40,12 +40,13 @@ public class AuthImpl implements AuthService {
         this.emailService=emailService;
     }
 
+    //Realizar el login
     @Override
     public LoginResponse login(LoginRequest request){
 
         return repo.findByEmailWithRoleAndPermissions(request.getEmail())
-                .filter(UserEntity::isActive)
-                .filter(user -> passwordEncoder.matches(
+                .filter(UserEntity::isActive) //
+                .filter(user -> passwordEncoder.matches( //
                     request.getPassword(),
                     user.getPassword()))
                 .map(user -> {
@@ -76,12 +77,13 @@ public class AuthImpl implements AuthService {
                 );
     }
 
+    //Olvidar contraseña
     @Override
     public void forgotPassword(String email){
         UserEntity user = repo.findByEmail(email).orElseThrow(() ->
             new UserException("No existe una cuenta registrada con ese correo electrónico."));
 
-        String token = UUID.randomUUID().toString();
+        String token = UUID.randomUUID().toString(); //
 
         user.setResetToken(token);
         user.setResetTokenExpiration(LocalDateTime.now().plusHours(1));
@@ -94,11 +96,13 @@ public class AuthImpl implements AuthService {
 
     }
 
+    //Resetear contraseña
     @Override
     public void resetPassword(String token, String newPassword){
         UserEntity user = repo.findByResetToken(token).orElseThrow(() ->
             new RuntimeException("Token inválido"));
 
+        //isBefore
         if(user.getResetTokenExpiration().isBefore(LocalDateTime.now())){
             throw new RuntimeException("Token expirado");
         }
@@ -110,6 +114,7 @@ public class AuthImpl implements AuthService {
         repo.save(user);
     }
 
+    //Cambiar contraseña
     @Override
     public void changePassword(String email, ChangePasswordRequest request){
         UserEntity user = repo.findByEmail(email).orElseThrow();
@@ -118,6 +123,7 @@ public class AuthImpl implements AuthService {
             throw new RuntimeException("Contraseña actual incorrecta");
         }
 
+        //encode
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         repo.save(user);

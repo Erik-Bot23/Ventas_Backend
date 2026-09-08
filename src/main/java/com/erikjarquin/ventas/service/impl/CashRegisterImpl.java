@@ -18,7 +18,7 @@ import com.erikjarquin.ventas.repository.CashRegisterRepository;
 import com.erikjarquin.ventas.repository.SaleRepository;
 import com.erikjarquin.ventas.service.CashRegisterService;
 
-@Service
+@Service //
 public class CashRegisterImpl implements CashRegisterService {
     private final CashRegisterRepository repository;
     private final CashRegisterMapper mapper;
@@ -33,7 +33,8 @@ public class CashRegisterImpl implements CashRegisterService {
         this.saleRepository=saleRepository;
     }
 
-    @Override
+    //Abrir caja
+    @Override //
     public CashResponse open(OpenCashRequest request){
         repository.findByActiveTrue().ifPresent(c -> {
             throw new RuntimeException("Ya existe una caja abierta");
@@ -58,6 +59,7 @@ public class CashRegisterImpl implements CashRegisterService {
         return mapper.toResponse(cash);
     }
 
+    //Cerrar la caja
     @Override
     public CashResponse close(CloseCashRequest request){
         CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() -> 
@@ -85,6 +87,7 @@ public class CashRegisterImpl implements CashRegisterService {
         return mapper.toResponse(cash);
     }
 
+    //Ver la caja activa
     @Override
     public CashResponse getActiveCash(){
         CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() ->
@@ -93,6 +96,7 @@ public class CashRegisterImpl implements CashRegisterService {
         return mapper.toResponse(cash);
     }
 
+    //Ver el resumen de la venta
     @Override
     public CashSummaryResponse getSummary(){
         CashRegisterEntity cash = repository.findByActiveTrue().orElseThrow(() ->
@@ -101,6 +105,7 @@ public class CashRegisterImpl implements CashRegisterService {
         return calculateSummary(cash);
     }
 
+    //Calcular el resumen de la venta
     private CashSummaryResponse calculateSummary(CashRegisterEntity cash){
         List<SaleEntity> sales = saleRepository.findByCashRegister(cash);
 

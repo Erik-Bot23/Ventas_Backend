@@ -28,12 +28,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-@ConditionalOnProperty(name = "payment.terminal.type", havingValue = "PHYSICAL")
+@RequiredArgsConstructor //
+@ConditionalOnProperty(name = "payment.terminal.type", havingValue = "PHYSICAL") //
 public class TerminalPhysicalImpl implements TerminalService {
     private final TerminalConfig config;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    //Procesar el pago
     @Override
     public TerminalResponse processPayment(TerminalRequest request){
         log.info("[TERMINAL FÍSICA] Conectando a {}:{}", config.getHost(), config.getPort());
@@ -72,6 +73,7 @@ public class TerminalPhysicalImpl implements TerminalService {
         }
     }
 
+    //Enviar información a la terminal
     private String sendToTerminal(TerminalRequest request) throws IOException {
         //Protocolo seguro: Solo transactionId y amount
         String message = buildTerminalMessage(request);
@@ -85,7 +87,7 @@ public class TerminalPhysicalImpl implements TerminalService {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))){
                 // Enviar mensaje
                 out.println(message);
-                log.info("📤 Mensaje enviado: {}", message);
+                log.info("Mensaje enviado: {}", message);
                 
                 // Leer en una sola línea 
                 String response = in.readLine();
@@ -94,7 +96,7 @@ public class TerminalPhysicalImpl implements TerminalService {
                     throw new IOException("La terminal cerró la conexción sin responder");
                 }
                 
-                log.info("📥 Respuesta recibida: {}", response);
+                log.info("Respuesta recibida: {}", response);
                 return response;
             }
         } catch (SocketTimeoutException e){
@@ -102,6 +104,7 @@ public class TerminalPhysicalImpl implements TerminalService {
         }
     }
 
+    //Mensaje de la terminal con información del pago
     private String buildTerminalMessage(TerminalRequest request){
         //Protocolo específico de la terminal (ejemplo ficticio)
         //Solo información necesaria, sin datos sensibles
@@ -113,8 +116,8 @@ public class TerminalPhysicalImpl implements TerminalService {
                         request.getTransactionId());
     }
 
+    //Parsear la respuesta de la terminal según su protocolo
     private TerminalResponse parseTerminalResponse(String response){
-        //Parsear la respuesta de la terminal según su protocolo
         //Ejemplo de respuesta esperada:
         //"000|AUT20231201123456|1234|VISA|DEBIT|APROBADA"
         String[] parts = response.split("\\|");
@@ -132,10 +135,9 @@ public class TerminalPhysicalImpl implements TerminalService {
                 .build();
     }
 
+    //Implementar reversa para la terminal física
     @Override
     public boolean reversePayment(String transactionId){
-        //Implementar reversa para la terminal física
-        
         log.info("Reversando transacción en terminal física: {}", transactionId);
 
         try {
@@ -152,9 +154,9 @@ public class TerminalPhysicalImpl implements TerminalService {
         }
     }
 
+    //Consultar estado sin datos sensibles
     @Override
-    public TerminalResponse getTransactionStatus(String transactionId){
-        // Consultar estado sin datos sensibles
+    public TerminalResponse getTransactionStatus(String transactionId){  
         try {
             String message = String.format("STS|%s|%s|%s",
                     config.getMerchantId(),

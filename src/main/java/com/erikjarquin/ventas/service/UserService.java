@@ -6,15 +6,11 @@ import com.erikjarquin.ventas.model.dto.User.CreateUserRequest;
 import com.erikjarquin.ventas.model.dto.User.UpdateUserRequest;
 import com.erikjarquin.ventas.model.dto.User.UserDto;
 
-//Modulo de usuario completo y carpetas correctas
+//Service de user
 public interface  UserService {
     List<UserDto> getAllUsers();
-
     UserDto createUser(CreateUserRequest request);
-
     UserDto updateUser(Long id, UpdateUserRequest request);
-
     void deactivateUser(Long id);
-
     void activateUser(Long id);
 }

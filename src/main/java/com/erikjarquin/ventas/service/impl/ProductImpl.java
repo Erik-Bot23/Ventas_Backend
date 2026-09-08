@@ -25,16 +25,19 @@ public class ProductImpl implements ProductService {
         this.categoryRepository=categoryRepository;
     }
 
+    //Listar todos los productos
     @Override
     public List<ProductDto> getAll(){
         return repository.findAll().stream().map(ProductMapper::toDto).collect(Collectors.toList());
     }
 
+    //Listar productos por categoría
     @Override
     public List<ProductDto> getByCategory(String category){
         return repository.findByCategory_Name(category).stream().map(ProductMapper::toDto).collect(Collectors.toList());
     }
 
+    //Guardar nuevo producto
     @Override
     public ProductDto save(
         String name,
@@ -68,6 +71,7 @@ public class ProductImpl implements ProductService {
         return ProductMapper.toDto(saved);
     }
 
+    //Actualizar producto
     @Override
     public ProductDto update(
         Long id,
@@ -84,7 +88,7 @@ public class ProductImpl implements ProductService {
         entity.setPrice(price);
         entity.setStock(stock);
 
-        CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+        CategoryEntity category = categoryRepository.findById(categoryId).orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         entity.setCategory(category);
         entity.setSku(sku);
         entity.setBarcode(barcode);
@@ -99,6 +103,7 @@ public class ProductImpl implements ProductService {
         return ProductMapper.toDto(updated);
     }
 
+    //Borrar producto
     @Override
     public void delete(Long id){
         if(!repository.existsById(id)){
@@ -107,6 +112,7 @@ public class ProductImpl implements ProductService {
         repository.deleteById(id);
     }
 
+    //Buscar productos por código de barras
     @Override
     public ProductDto findByBarcode(String barcode){
         ProductEntity product = repository.findByBarcode(barcode).orElseThrow(() ->
@@ -115,6 +121,7 @@ public class ProductImpl implements ProductService {
         return ProductMapper.toDto(product);
     }
 
+    //Buscador de productos
     @Override
     public List<ProductDto> search(String q){
         return repository.search(q).stream().map(ProductMapper::toDto).collect(Collectors.toList());

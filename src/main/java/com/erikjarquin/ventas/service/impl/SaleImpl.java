@@ -32,9 +32,9 @@ import com.erikjarquin.ventas.service.SaleService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@Service
-@Transactional
+@Slf4j //
+@Service // 
+@Transactional //
 public class SaleImpl implements SaleService {
     private final ProductRepository productRepository;
     private final SaleRepository saleRepository;
@@ -56,18 +56,18 @@ public class SaleImpl implements SaleService {
         this.paymentService=paymentService;
     }
 
-    @Override 
-    @Transactional(rollbackFor = Exception.class)
+    @Override //
+    @Transactional(rollbackFor = Exception.class) //
     public SaleResponse processSale(SaleRequest request){
         log.info("Iniciando proceso de venta. Método de pago: {}", request.getPaymentMethod());
 
-        /*VALIDACIONES INICIALES */
+        /*VALIDACIONES INICIALES*/
         validateRequest(request);
 
         /*VERIFICAR CAJA ABIERTA*/
         CashRegisterEntity cash = getActiveCashRegister();
 
-        /*CREAR VENTA (sin detalles todavía) */
+        /*CREAR VENTA (sin detalles todavía)*/
         SaleEntity sale = createBaseSale(request, cash);
         sale.setPaymentStatus(PaymentStatus.PENDING); //Estado inicial
 
@@ -75,7 +75,7 @@ public class SaleImpl implements SaleService {
         SaleEntity savedSale = saleRepository.save(sale);
         log.info("Venta creada con ID: {} (estado PENDING)", savedSale.getId());
 
-        /*PROCESAR PRODUCTOS Y CALCULAR TOTAL */
+        /*PROCESAR PRODUCTOS Y CALCULAR TOTAL*/
         ProcessedProducts processed = processProductsInMemory(request.getItems(), sale);
         savedSale.setDetails(processed.getDetails());
         savedSale.setTotal(processed.getTotal());
@@ -96,10 +96,7 @@ public class SaleImpl implements SaleService {
             throw new SaleException("Método de pago no soportado: " + request.getPaymentMethod());
         }
 
-        /* PROCESAR PAGO SEGÚN MÉTODO */
-        //processPayment(request, savedSale);
-
-        /* Solo si llegamos aquí, el pago fue exitoso*/
+        /*Solo si llegamos aquí, el pago fue exitoso*/
         // a) Guardar la venta
         savedSale.setPaymentStatus(PaymentStatus.APPROVED);
 
@@ -128,6 +125,7 @@ public class SaleImpl implements SaleService {
     }
 
     // ====== Métodos privados =====
+    //Validar el pago
     private void validateRequest(SaleRequest request){
         if(request == null){
             throw new SaleException("La solicitud de venta es obligatoria");        
@@ -142,10 +140,12 @@ public class SaleImpl implements SaleService {
         }
     }
 
+    //Ver caja activa
     private CashRegisterEntity getActiveCashRegister(){
         return cashRepository.findByActiveTrue().orElseThrow(() -> new SaleException("No existe una caja abierta"));
     }
 
+    //Crear la base de la venta
     private SaleEntity createBaseSale(SaleRequest request, CashRegisterEntity cash){
         SaleEntity sale = new SaleEntity();
         sale.setSaleDate(LocalDateTime.now());
@@ -155,32 +155,7 @@ public class SaleImpl implements SaleService {
         return sale;
     }
 
-    /* Ya no se utiliza */
-    private ProcessedProducts processProducts(List<SaleItemRequest> items, SaleEntity sale){
-        List<SaleDetailEntity> details = new ArrayList<>();
-        BigDecimal total = BigDecimal.ZERO;
-
-        for(SaleItemRequest item : items){
-            validateItem(item);
-
-            ProductEntity product = findProduct(item.getProductId());
-            validateStock(product, item.getQuantity());
-
-            //DESCONTAR STOCK (dentro de la misma transacción)
-            product.setStock(product.getStock() - item.getQuantity());
-            productRepository.save(product);
-
-            BigDecimal subtotal = calculateSubtotal(product, item.getQuantity());
-            total = total.add(subtotal);
-
-            SaleDetailEntity detail = createDetail(sale, product, item, subtotal);
-            details.add(detail);
-        }
-
-        return new ProcessedProducts(details, total);
-    }
-
-    /* Revisar */
+    //Procesar pago con tarjeta
     private CardPaymentResponse processCardPaymentWithResponse(SaleRequest request, SaleEntity sale){
         log.info("Procesando pago con tarjeta para venta ID: {}", sale.getId());
 
@@ -241,9 +216,9 @@ public class SaleImpl implements SaleService {
         }
 
         return new ProcessedProducts(details, total);
-
     }
 
+    //Se validan los productos
     private void validateItem(SaleItemRequest item){
         if(item == null){
             throw new SaleException("La venta contiene un producto inválido");
@@ -258,10 +233,12 @@ public class SaleImpl implements SaleService {
         }
     }
 
+    //Encontrar producto
     private ProductEntity findProduct(Long productId){
         return productRepository.findById(productId).orElseThrow(() -> new SaleException("Producto no encontrado: " + productId));
     }
 
+    //Validar stock en el inventario
     private void validateStock(ProductEntity product, Integer quantity){
         if(product.getStock() < quantity){
             throw new SaleException("Stock insuficiente para el producto: " + product.getName() + 
@@ -269,10 +246,12 @@ public class SaleImpl implements SaleService {
         }
     }
 
+    //Calcular el subtotal
     private BigDecimal calculateSubtotal(ProductEntity product, Integer quantity){
         return product.getPrice().multiply(BigDecimal.valueOf(quantity));
     }
 
+    //Crear el detalle de la venta 
     private SaleDetailEntity createDetail(SaleEntity sale, ProductEntity product, SaleItemRequest item, BigDecimal subtotal){
         SaleDetailEntity detail = new SaleDetailEntity();
         detail.setSale(sale);
@@ -283,17 +262,7 @@ public class SaleImpl implements SaleService {
         return detail;
     }
 
-    /* Ya no se utiliza de momento */
-    private void processPayment(SaleRequest request, SaleEntity sale){
-        if(request.getPaymentMethod() == PaymentMethod.CASH){
-            processCashPayment(request, sale);
-        } else if(request.getPaymentMethod() == PaymentMethod.DEBIT || request.getPaymentMethod() == PaymentMethod.CREDIT){
-            processCardPayment(request,sale);
-        } else {
-            throw new SaleException("Método de pago no soportado: " + request.getPaymentMethod());
-        }
-    }
-
+    //Procesar el pago en efectivo
     private void processCashPayment(SaleRequest request, SaleEntity sale){
         log.info("Procesando pago con efectivo para venta ID: {}", sale.getId());
 
@@ -317,53 +286,6 @@ public class SaleImpl implements SaleService {
         log.info("Pago en efectivo aprobado. Cambio: {}", change);
     }
 
-    private void processCardPayment(SaleRequest request, SaleEntity sale){
-        log.info("Procesando pago con tarjeta para venta ID: {}", sale.getId());
-
-        //Validar datos de tarjeta
-        if(request.getCardPayment() == null){
-            throw new SaleException("Debe proporcionar datos de la tarjeta");
-        }
-
-        //GUARDAR LA VENTA ANTES DEL PAGO(necesaria para referencia)
-        //SaleEntity savedSale = saleRepository.save(sale);
-
-        try{
-            //Preparar request para PaymentService
-            CardPaymentRequest cardRequest = request.getCardPayment();
-            cardRequest.setSaleId(sale.getId());
-            cardRequest.setPaymentMethod(request.getPaymentMethod());
-
-            //Procesar el pago con tarjeta(PaymentService se encarga de la asociación bidireccional)
-            CardPaymentResponse paymentResponse = paymentService.processCardPayment(cardRequest);
-
-            //Actualizar estado según la respuesta
-            if(paymentResponse.getStatus() == PaymentStatus.APPROVED){
-                sale.setPaymentStatus(PaymentStatus.APPROVED);
-                sale.setCashReceived(null);
-                sale.setChangeAmount(null);
-                log.info("Pago con tarjeta aprobado. Código: {}", paymentResponse.getAuthorizationCode());
-            } else {
-                throw new PaymentException("Pago con tarjeta rechazado: " + paymentResponse.getMessage());
-            }
-        } catch (PaymentException e){
-            //Relanzamos la excepción original sin convertirla
-            log.error("Error en pago con tarjeta: {}", e.getMessage());
-            
-            sale.setPaymentStatus(PaymentStatus.REJECTED);
-            saleRepository.save(sale);
-            throw e;
-        } catch (Exception e){
-            log.error("Error inesperado en pago con tarjeta: {}", e.getMessage());
-            
-            //Spring hará rollback automático de toda la transacción
-            //No necesitamos rollback manual
-            sale.setPaymentStatus(PaymentStatus.REJECTED);
-            saleRepository.save(sale);
-            throw new SaleException("Error al procesar pago con tarjeta: " + e.getMessage(), e);
-        }
-    }
-
     //===== CLASE AUXILIAR =====
     private static class ProcessedProducts {
         private final List<SaleDetailEntity> details;
@@ -384,12 +306,14 @@ public class SaleImpl implements SaleService {
     }
 
     //===== MÉTODOS DE CONSULTA ======
+    //Consultar las ventas
     @Override
     @Transactional(readOnly = true)
     public List<SaleHistoryResponse> getSales(){
         return saleRepository.findAll().stream().map(mapper::toHistoryResponse).toList();
     }
 
+    //Consultar la venta por ID
     @Override
     public SaleDetailHistoryResponse getSaleById(Long saleId){
         SaleEntity sale = saleRepository.findById(saleId).orElseThrow(

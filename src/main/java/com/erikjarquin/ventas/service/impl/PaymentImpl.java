@@ -24,8 +24,8 @@ import com.erikjarquin.ventas.service.TerminalService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Service
-@Slf4j
+@Service //
+@Slf4j //
 public class PaymentImpl implements PaymentService {
     private final SaleRepository saleRepository;
     private final PaymentRepository paymentRepository;
@@ -45,8 +45,9 @@ public class PaymentImpl implements PaymentService {
                             this.terminalConfig=terminalConfig;
                         }
 
-    @Override
-    @Transactional
+    //Procesar el pago
+    @Override //
+    @Transactional //
     public CardPaymentResponse processCardPayment(CardPaymentRequest request){ 
         log.info("Procesando pago con tarjeta para la venta ID: {}", request.getSaleId());
 
@@ -135,11 +136,12 @@ public class PaymentImpl implements PaymentService {
      */
     private String generateTransactionId(Long saleId){
         //Formato: TXN-{saleId}-{timestamp}-{uuid_corto}
-        String timestamp = String.valueOf(System.currentTimeMillis());
-        String shortUuid = UUID.randomUUID().toString().substring(0, 8);
-        return String.format("TXN-%d-%s-%s", saleId, timestamp, shortUuid);
+        String timestamp = String.valueOf(System.currentTimeMillis()); //currentTimeMillis():
+        String shortUuid = UUID.randomUUID().toString().substring(0, 8); //substring: 
+        return String.format("TXN-%d-%s-%s", saleId, timestamp, shortUuid); //format("TXN-%d-%s-%s"): 
     }
 
+    //Revisar el estado de la venta
     @Override
     public CardPaymentResponse getPaymentStatus(String transactionId){
         log.info("Consultando estado de transacción: {}", transactionId);
@@ -170,6 +172,7 @@ public class PaymentImpl implements PaymentService {
         return paymentMapper.toCardPaymentResponse(payment);
     }
     
+    //Reintentar pago
     @Override
     @Transactional
     public CardPaymentResponse retryPayment(Long paymentId){
@@ -202,6 +205,7 @@ public class PaymentImpl implements PaymentService {
         return processCardPayment(retryRequest);
     }
 
+    //Regresar el pago
     @Override
     @Transactional
     public boolean reversePayment(Long paymentId){
@@ -226,7 +230,7 @@ public class PaymentImpl implements PaymentService {
             sale.setPaymentStatus(PaymentStatus.REVERSED);
             saleRepository.save(sale);
 
-            log.info("Pago reversado exitosament: {}", paymentId);
+            log.info("Pago reversado exitosamente: {}", paymentId);
             return true;
         }
 
