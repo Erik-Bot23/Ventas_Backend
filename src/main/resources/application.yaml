@@ -36,6 +36,7 @@ spring:
 app:
   frontend-url: http://localhost:4200
   upload-dir: ./uploads
+  upload-url: http://localhost:8081/api/uploads
 
 server:
   port: 8081

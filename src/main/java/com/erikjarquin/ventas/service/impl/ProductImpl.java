@@ -21,23 +21,25 @@ public class ProductImpl implements ProductService {
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
     private final FileStorageService fileStorageService;
+    private final ProductMapper productMapper;
     
-    public ProductImpl(ProductRepository repository, CategoryRepository categoryRepository, FileStorageService fileStorageService){
+    public ProductImpl(ProductRepository repository, CategoryRepository categoryRepository, FileStorageService fileStorageService, ProductMapper productMapper){
         this.repository=repository;
         this.categoryRepository=categoryRepository;
         this.fileStorageService = fileStorageService;
+        this.productMapper = productMapper;
     }
 
     //Listar todos los productos
     @Override
     public List<ProductDto> getAll(){
-        return repository.findAll().stream().map(ProductMapper::toDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(productMapper::toDto).collect(Collectors.toList());
     }
 
     //Listar productos por categoría
     @Override
     public List<ProductDto> getByCategory(String category){
-        return repository.findByCategory_Name(category).stream().map(ProductMapper::toDto).collect(Collectors.toList());
+        return repository.findByCategory_Name(category).stream().map(productMapper::toDto).collect(Collectors.toList());
     }
 
     //Guardar nuevo producto
@@ -68,7 +70,7 @@ public class ProductImpl implements ProductService {
 
         ProductEntity saved = repository.save(entity);
 
-        return ProductMapper.toDto(saved);
+        return productMapper.toDto(saved);
     }
 
     //Actualizar producto
@@ -100,7 +102,7 @@ public class ProductImpl implements ProductService {
 
         ProductEntity updated = repository.save(entity);
 
-        return ProductMapper.toDto(updated);
+        return productMapper.toDto(updated);
     }
 
     //Borrar producto
@@ -117,13 +119,13 @@ public class ProductImpl implements ProductService {
         ProductEntity product = repository.findByBarcode(barcode).orElseThrow(() ->
             new RuntimeException("Producto no encontrado"));
 
-        return ProductMapper.toDto(product);
+        return productMapper.toDto(product);
     }
 
     //Buscador de productos
     @Override
     public List<ProductDto> search(String q){
-        return repository.search(q).stream().map(ProductMapper::toDto).collect(Collectors.toList());
+        return repository.search(q).stream().map(productMapper::toDto).collect(Collectors.toList());
     }
 
 }
