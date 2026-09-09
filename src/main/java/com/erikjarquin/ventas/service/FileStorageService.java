@@ -15,12 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileStorageService {
 
-    private final Path uploadDir;
+    private final Path uploadDir; //
 
     public FileStorageService(@Value("${app.upload-dir:./uploads}") String uploadDir) {
-        this.uploadDir = Paths.get(uploadDir).toAbsolutePath().normalize();
+        this.uploadDir = Paths.get(uploadDir).toAbsolutePath().normalize(); //
         try {
-            Files.createDirectories(this.uploadDir);
+            Files.createDirectories(this.uploadDir); //
         } catch (IOException e) {
             throw new RuntimeException("No se pudo crear el directorio de uploads: " + this.uploadDir, e);
         }
@@ -30,15 +30,20 @@ public class FileStorageService {
         if (file == null || file.isEmpty()) {
             return null;
         }
+
+        //
         String original = StringUtils.cleanPath(
                 file.getOriginalFilename() == null ? "" : file.getOriginalFilename());
         String extension = "";
-        int dot = original.lastIndexOf('.');
+        int dot = original.lastIndexOf('.'); //
+
         if (dot >= 0) {
             extension = original.substring(dot).toLowerCase();
         }
+        
         String storedName = UUID.randomUUID().toString().replace("-", "") + extension;
         Path target = this.uploadDir.resolve(storedName).normalize();
+        
         try {
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
