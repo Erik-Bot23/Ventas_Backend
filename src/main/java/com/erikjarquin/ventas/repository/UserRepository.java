@@ -8,9 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 import com.erikjarquin.ventas.model.entity.UserEntity;
 
+//Repositorio de user
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
 
+    //
     @Query("""
         SELECT DISTINCT u
             FROM UserEntity u
@@ -19,7 +21,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
                     WHERE u.email = :email
         """)
     
+    //Encontrar usuario con email y permisos
     Optional<UserEntity> findByEmailWithRoleAndPermissions(@Param("email") String email);
-    Optional<UserEntity> findByResetToken(String resetToken);
     
+    //Resetear el token
+    Optional<UserEntity> findByResetToken(String resetToken);
 }

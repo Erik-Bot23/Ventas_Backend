@@ -3,13 +3,14 @@ package com.erikjarquin.ventas.model.dto.Payment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-//@AllArgsConstructor
-@NoArgsConstructor
+//DTO de validación del resultado del pago
+@Data //
+@NoArgsConstructor //
 public class PaymentValidationResult {
     private boolean valid;
     private String errorMessage; 
     
+    //Constructor
     public PaymentValidationResult(boolean valid, String errorMessage){
         this.valid=valid;
         this.errorMessage=errorMessage;

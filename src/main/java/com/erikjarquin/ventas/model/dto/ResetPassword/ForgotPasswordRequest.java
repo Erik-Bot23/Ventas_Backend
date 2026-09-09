@@ -1,5 +1,6 @@
 package com.erikjarquin.ventas.model.dto.ResetPassword;
 
+//DTO de pedido de contraseña olvidada
 public class ForgotPasswordRequest {
     private String email;
 

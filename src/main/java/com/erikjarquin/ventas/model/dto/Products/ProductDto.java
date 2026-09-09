@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.model.dto.Products;
 
 import java.math.BigDecimal;
 
+//DTO de producto
 public class ProductDto {
     private Long id;
     private String name;
@@ -13,6 +14,7 @@ public class ProductDto {
     private String sku;
     private String barcode;
 
+    //Constructor vacío
     public ProductDto(){}
 
     //getters y setters de id

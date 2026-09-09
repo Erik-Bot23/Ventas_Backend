@@ -10,8 +10,12 @@ import org.springframework.stereotype.Repository;
 import com.erikjarquin.ventas.model.entity.PermissionEntity;
 import com.erikjarquin.ventas.model.enums.PermissionName;
 
-@Repository
+//Repositorio de permisos
+@Repository //
 public interface PermissionRepository extends JpaRepository<PermissionEntity, Long>{
+    //Buscar permiso
     Optional<PermissionEntity> findByName(PermissionName name);
+    
+    //Buscar permisos
     List<PermissionEntity> findByNameIn(Collection<PermissionName> names);
 }

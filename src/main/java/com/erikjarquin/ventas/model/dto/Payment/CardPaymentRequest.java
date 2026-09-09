@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.model.dto.Payment;
 
 import com.erikjarquin.ventas.model.enums.PaymentMethod;
 
+//DTO de pedido de pago con tarjeta
 public class CardPaymentRequest {
     private Long saleId; //ID de la venta existente
     private PaymentMethod paymentMethod; //DEBIT o CREDIT

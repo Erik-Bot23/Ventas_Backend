@@ -1,11 +1,14 @@
 package com.erikjarquin.ventas.model.dto.Categories;
 
+//DTO de categoría
 public class CategoryDto {
     private Long id;
     private String name;
 
+    //Constructor vacío
     public CategoryDto(){}
 
+    //Constructor
     public CategoryDto(Long id, String name){
         this.id=id;
         this.name=name;

@@ -1,5 +1,6 @@
 package com.erikjarquin.ventas.model.dto.ResetPassword;
 
+//DTO de pedido de cambio de contraseña
 public class ChangePasswordRequest {
     private String currentPassword;
     private String newPassword;

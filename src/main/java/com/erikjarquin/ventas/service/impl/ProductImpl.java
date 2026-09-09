@@ -13,16 +13,19 @@ import com.erikjarquin.ventas.model.entity.CategoryEntity;
 import com.erikjarquin.ventas.model.entity.ProductEntity;
 import com.erikjarquin.ventas.repository.CategoryRepository;
 import com.erikjarquin.ventas.repository.ProductRepository;
+import com.erikjarquin.ventas.service.FileStorageService;
 import com.erikjarquin.ventas.service.ProductService;
 
 @Service
 public class ProductImpl implements ProductService {
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
+    private final FileStorageService fileStorageService;
     
-    public ProductImpl(ProductRepository repository, CategoryRepository categoryRepository){
+    public ProductImpl(ProductRepository repository, CategoryRepository categoryRepository, FileStorageService fileStorageService){
         this.repository=repository;
         this.categoryRepository=categoryRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     //Listar todos los productos
@@ -61,10 +64,7 @@ public class ProductImpl implements ProductService {
         entity.setSku(sku);
         entity.setBarcode(barcode);
 
-        //Temporal
-        if(image != null){
-            entity.setImg(image.getOriginalFilename());
-        }
+        entity.setImg(fileStorageService.store(image));
 
         ProductEntity saved = repository.save(entity);
 
@@ -93,9 +93,9 @@ public class ProductImpl implements ProductService {
         entity.setSku(sku);
         entity.setBarcode(barcode);
 
-        //Opcional: meanjear imagen
         if(image != null && !image.isEmpty()){
-            entity.setImg(image.getOriginalFilename());
+            fileStorageService.delete(entity.getImg());
+            entity.setImg(fileStorageService.store(image));
         }
 
         ProductEntity updated = repository.save(entity);
@@ -106,9 +106,8 @@ public class ProductImpl implements ProductService {
     //Borrar producto
     @Override
     public void delete(Long id){
-        if(!repository.existsById(id)){
-            throw new RuntimeException("Producto no encontrado");
-        }
+        ProductEntity entity = repository.findById(id).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        fileStorageService.delete(entity.getImg());
         repository.deleteById(id);
     }
 

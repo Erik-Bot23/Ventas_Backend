@@ -10,6 +10,7 @@ import com.erikjarquin.ventas.model.dto.Terminal.TestCard;
 
 import lombok.extern.slf4j.Slf4j;
 
+//Repositorio de tarjetas
 @Slf4j
 @Repository
 public class TestCardRepository {
@@ -68,12 +69,14 @@ public class TestCardRepository {
         log.info("{} tarjetas de prueba cargadas", cards.size());
     }
     
+    //Encontrar el número de tarjeta
     public TestCard findByCardNumber(String cardNumber){
         return cards.get(cardNumber);
     }
 
+    //Revisar si existe una tarjeta
     public boolean exists(String cardNumber){
-        return cards.containsKey(cardNumber);
+        return cards.containsKey(cardNumber); //
     }
 
     //Método para obtener todas las tarjetas (útil para frontend)

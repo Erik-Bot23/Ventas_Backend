@@ -14,16 +14,17 @@ import com.erikjarquin.ventas.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@Component
-@RequiredArgsConstructor
+//
+@Slf4j //
+@Component //
+@RequiredArgsConstructor //
 public class PaymentMonitorJob {  
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
 
 
     //Ejecutar cada 5 minutos
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 300000) //
     public void monitorPendingPayments(){
         log.info("Monitoreando pagod pendientes...");
 

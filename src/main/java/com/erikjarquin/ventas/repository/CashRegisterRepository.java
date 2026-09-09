@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.erikjarquin.ventas.model.entity.CashRegisterEntity;
 
+//Repositorio de caja
 public interface CashRegisterRepository extends JpaRepository<CashRegisterEntity, Long> {
     Optional<CashRegisterEntity> findByActiveTrue();
 }

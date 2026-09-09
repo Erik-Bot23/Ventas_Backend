@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.model.dto.Login;
 
 import java.util.List;
 
+//DTO de respuesta de login
 public class LoginResponse {
     private boolean success;
     private Long id;
@@ -11,6 +12,7 @@ public class LoginResponse {
     private List<String> permissions;
     private String token;
 
+    //Constructor
     public LoginResponse(boolean success, Long id, String name, String email, String role, List<String> permissions, String token){
         this.success=success;
         this.id=id;
@@ -21,6 +23,7 @@ public class LoginResponse {
         this.token=token;
     }
 
+    //Getter y setter de success
     public boolean isSuccess(){
         return success;
     }
@@ -29,6 +32,7 @@ public class LoginResponse {
         this.success=success;
     }
 
+    //Getter y setter de id
     public Long getId(){
         return id;
     }
@@ -37,6 +41,7 @@ public class LoginResponse {
         this.id=id;
     }
 
+    //Getter y setter de name
     public String getName(){
         return name;
     }
@@ -45,6 +50,7 @@ public class LoginResponse {
         this.name=name;
     }
 
+    //Getter y setter de email
     public String getEmail(){
         return email;
     }
@@ -53,6 +59,7 @@ public class LoginResponse {
         this.email=email;
     }
 
+    //Getter y setter de role
     public String getRole(){
         return role;
     }
@@ -61,6 +68,7 @@ public class LoginResponse {
         this.role=role;
     }
 
+    //Getter y setter de token
     public String getToken(){
         return token;
     }
@@ -69,6 +77,7 @@ public class LoginResponse {
         this.token=token;
     }
 
+    //Getter y setter de permissions
     public List<String> getPermissions(){
         return permissions;
     }

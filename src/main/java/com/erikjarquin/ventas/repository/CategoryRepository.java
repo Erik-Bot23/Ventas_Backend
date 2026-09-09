@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.erikjarquin.ventas.model.entity.CategoryEntity;
-import com.erikjarquin.ventas.model.entity.RoleEntity;
 
+//Repositorio de categoria
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
-    Optional<RoleEntity> findByName(String name);
+    Optional<CategoryEntity> findByName(String name);
 }

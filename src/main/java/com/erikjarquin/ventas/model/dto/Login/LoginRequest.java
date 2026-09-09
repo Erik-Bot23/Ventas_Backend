@@ -1,5 +1,6 @@
 package com.erikjarquin.ventas.model.dto.Login;
 
+//DTO de pedido de login
 public class LoginRequest {
     //private String id;
     private String email;

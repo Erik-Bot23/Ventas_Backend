@@ -8,9 +8,12 @@ import org.springframework.data.repository.query.Param;
 
 import com.erikjarquin.ventas.model.entity.ProductEntity;
 
+//Repositorio de product
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
+    //Buscar producto por categoria
     List<ProductEntity> findByCategory_Name(String name);
 
+    //Buscar producto por código de barras
     Optional<ProductEntity> findByBarcode(String barcode);
 
     @Query("""
@@ -22,5 +25,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
         OR LOWER(p.barcode) LIKE LOWER(CONCAT('%', :q, '%'))
     """)
 
+    //Buscar producto con el buscador
     List<ProductEntity> search(@Param("q") String q);
 }

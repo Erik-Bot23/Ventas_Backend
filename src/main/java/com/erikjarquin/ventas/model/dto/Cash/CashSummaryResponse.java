@@ -2,6 +2,7 @@ package com.erikjarquin.ventas.model.dto.Cash;
 
 import java.math.BigDecimal;
 
+//DTO de respuesta del resumen de caja
 public class CashSummaryResponse {
     private Long cashId;
     private BigDecimal openingAmount;
@@ -12,6 +13,7 @@ public class CashSummaryResponse {
     private BigDecimal expectedAmount;
     private int totalTickets;
 
+    //Constructor vacío
     public CashSummaryResponse(){}
 
     //Getter y setter de cashId

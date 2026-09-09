@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.erikjarquin.ventas.model.enums.PaymentStatus;
 
+//DTO de respuesta de pago con tarjeta
 public class CardPaymentResponse {
     private Long paymentId;
     private Long saleId;

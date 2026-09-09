@@ -1,11 +1,14 @@
 package com.erikjarquin.ventas.model.dto.Permissions;
 
+//DTO de respuesta de permisos
 public class PermissionResponse {
     private Long id;
     private String name;
 
+    //Constructor vacío
     public PermissionResponse(){}
 
+    //Constructor
     public PermissionResponse(Long id, String name){
         this.id=id;
         this.name=name;
@@ -28,6 +31,4 @@ public class PermissionResponse {
     public void setName(String name){
         this.name=name;
     }
-
-    
 }

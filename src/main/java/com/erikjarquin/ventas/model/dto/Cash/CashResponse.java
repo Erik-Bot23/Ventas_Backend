@@ -3,6 +3,7 @@ package com.erikjarquin.ventas.model.dto.Cash;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+//DTO de respuesta de caja
 public class CashResponse {
     private Long id;
     private LocalDateTime openedAt;
@@ -18,6 +19,7 @@ public class CashResponse {
     private BigDecimal totalSales;
     private int totalTickets;
 
+    //Constructor vacío
     public CashResponse(){}
 
     //Getter y setter de id

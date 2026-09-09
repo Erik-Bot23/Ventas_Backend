@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.erikjarquin.ventas.model.entity.PaymentEntity;
 import com.erikjarquin.ventas.model.enums.PaymentStatus;
 
+//Repositorio de payment
 public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     Optional<PaymentEntity> findBySaleId(Long saleId);
 
