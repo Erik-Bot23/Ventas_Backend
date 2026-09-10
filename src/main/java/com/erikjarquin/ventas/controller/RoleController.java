@@ -29,30 +29,35 @@ public class RoleController {
         this.service=service;
     }
 
+    //Ver todos los roles
     @PreAuthorize("hasAuthority('VER_ROLES')")
     @GetMapping
     public List<RoleDto> getAllRoles(){
         return service.getAllRoles();
     }
 
+    //Ver los roles por su ID
     @PreAuthorize("hasAuthority('VER_ROLES')")
     @GetMapping("/{id}")
     public RoleDto getRoleById(@PathVariable Long id){
         return service.getRoleById(id);
     }
 
+    //Crear role
     @PreAuthorize("hasAuthority('CREAR_ROLES')")
     @PostMapping
     public RoleDto createRole(@RequestBody CreateRoleRequest request){
         return service.createRole(request);
     }
 
+    //Editar role
     @PreAuthorize("hasAuthority('EDITAR_ROLES')")
     @PutMapping("/{id}")
     public RoleDto updateRole(@PathVariable Long id, @RequestBody UpdateRoleRequest request){
         return service.updateRole(id, request);
     }
 
+    //Eliminar role
     @PreAuthorize("hasAuthority('ELIMINAR_ROLES')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRole(@PathVariable Long id){

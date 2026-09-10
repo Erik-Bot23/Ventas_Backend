@@ -25,18 +25,21 @@ public class CategoryController {
         this.service=service;
     }
 
+    //Ver todas las categorías
     @PreAuthorize("hasAuthority('VER_CATEGORIAS')")
     @GetMapping
     public List<CategoryDto> getAll(){
         return service.getAll();
     }
 
+    //Guardar una nueva categoría
     @PreAuthorize("hasAuthority('CREAR_CATEGORIAS')")
     @PostMapping
     public CategoryDto save(@RequestBody CategoryDto dto){
         return service.save(dto);
     }
 
+    //Borrar categoría
     @PreAuthorize("hasAuthority('ELIMINAR_CATEGORIAS')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){

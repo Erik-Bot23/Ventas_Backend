@@ -27,30 +27,35 @@ public class UserController {
         this.service = service;
     }
 
+    //Ver todos los usuarios
     @PreAuthorize("hasAuthority('VER_USUARIOS')")
     @GetMapping
     public List<UserDto> getAllUsers(){
         return service.getAllUsers();
     }
 
+    //Crear usuario
     @PreAuthorize("hasAuthority('CREAR_USUARIOS')")
     @PostMapping
     public UserDto createUser(@RequestBody CreateUserRequest request){
         return service.createUser(request);
     }
 
+    //Editar usuario
     @PreAuthorize("hasAuthority('EDITAR_USUARIOS')")
     @PutMapping("/{id}")
     public UserDto updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request){
         return service.updateUser(id, request);
     }
 
+    //Desactivar usuario
     @PreAuthorize("hasAuthority('DESACTIVAR_USUARIOS')")
     @DeleteMapping("/{id}")
     public void deactivateUser(@PathVariable Long id){
         service.deactivateUser(id);
     }
 
+    //Activar usuario
     @PreAuthorize("hasAuthority('ACTIVAR_USUARIOS')")
     @PatchMapping("/{id}/active")
     public void activateUser(@PathVariable Long id){

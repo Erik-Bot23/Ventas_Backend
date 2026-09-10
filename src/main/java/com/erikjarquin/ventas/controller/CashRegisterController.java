@@ -16,7 +16,7 @@ import com.erikjarquin.ventas.service.CashRegisterService;
 
 @RestController
 @RequestMapping("/api/cash")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200") //
 public class CashRegisterController {
     private final CashRegisterService service;
 
@@ -24,24 +24,28 @@ public class CashRegisterController {
         this.service=service;
     }
 
-    @PreAuthorize("hasAuthority('CORTE_CAJA')")
+    //Ver resumen de las ventas
+    @PreAuthorize("hasAuthority('CORTE_CAJA')")//
     @GetMapping("/summary")
     public CashSummaryResponse getSummary(){
         return service.getSummary();
     }
 
+    //Abrir caja
     @PreAuthorize("hasAuthority('ABRIR_CAJA')")
     @PostMapping("/open")
     public CashResponse open(@RequestBody OpenCashRequest request){
         return service.open(request);
     }
 
+    //Cerrar la caja
     @PreAuthorize("hasAuthority('CERRAR_CAJA')")
     @PostMapping("/close")
     public CashResponse close(@RequestBody CloseCashRequest request){
         return service.close(request);
     }
 
+    //Ver si la caja esta activa
     @PreAuthorize("hasAuthority('VER_CAJA')")
     @GetMapping("/active")
     public CashResponse getActiveCash(){

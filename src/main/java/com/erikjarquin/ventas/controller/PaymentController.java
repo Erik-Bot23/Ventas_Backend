@@ -15,10 +15,9 @@ import com.erikjarquin.ventas.service.PaymentService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Slf4j //
 @RestController
 @RequestMapping("/api/payments")
-//@CrossOrigin(origins = "http://localhost:4200")
 public class PaymentController {
     private final PaymentService paymentService;
 
@@ -26,6 +25,7 @@ public class PaymentController {
         this.paymentService=paymentService;
     }
 
+    //Procesar el pago con tarjeta
     @PreAuthorize("hasAuthority('PROCESAR_PAGOS')")
     @PostMapping("/card")
     public ResponseEntity<CardPaymentResponse> processCardPayment(@RequestBody CardPaymentRequest request){
@@ -52,6 +52,7 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
+    //Regresar pago si falla
     @PreAuthorize("hasAuthority('PROCESAR_PAGOS')")
     @PostMapping("/reverse/{paymentId}")
     public ResponseEntity<Boolean> reversePayment(@PathVariable Long paymentId){

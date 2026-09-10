@@ -30,15 +30,17 @@ public class ProductController {
         this.service = service;
     }
 
+    //Ver productos
     @PreAuthorize("hasAuthority('VER_PRODUCTOS')")
     @GetMapping
-    public List<ProductDto> getProducts(@RequestParam(required = false) String category){ //¿Long categoryId?
+    public List<ProductDto> getProducts(@RequestParam(required = false) String category){ 
         if (category != null) {
             return service.getByCategory(category);
         }
         return service.getAll();
     }
     
+    //Crear un nuevo producto
     @PreAuthorize("hasAuthority('CREAR_PRODUCTOS')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProductDto saveProduct(
@@ -53,6 +55,7 @@ public class ProductController {
         return service.save(name, price, stock, categoryId, sku, barcode, image); 
     }
 
+    //Editar un producto
     @PreAuthorize("hasAuthority('EDITAR_PRODUCTOS')")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProductDto updateProduct(
@@ -68,6 +71,7 @@ public class ProductController {
         return service.update(id, name, price, stock, categoryId, sku, barcode, image);
     }
 
+    //Eliminar producto con el ID
     @PreAuthorize("hasAuthority('ELIMINAR_PRODUCTOS')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
@@ -75,12 +79,14 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    //Buscar productos con el código de barras
     @PreAuthorize("hasAuthority('VER_PRODUCTOS')")
     @GetMapping("/barcode/{barcode}")
     public ProductDto findByBarcode(@PathVariable String barcode){
         return service.findByBarcode(barcode);
     }
 
+    //Buscar productos por nombre
     @PreAuthorize("hasAuthority('VER_PRODUCTOS')")
     @GetMapping("/search")
     public List<ProductDto> search(@RequestParam String q){

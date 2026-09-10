@@ -19,6 +19,7 @@ public class PermissionController {
         this.permissionService=permissionService;
     }
 
+    //Ver todos los permisos
     @PreAuthorize("hasAuthority('VER_ROLES')")
     @GetMapping
     public List<PermissionResponse> getAllPermissions(){

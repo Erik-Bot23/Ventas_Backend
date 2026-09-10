@@ -2,7 +2,6 @@ package com.erikjarquin.ventas.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +15,8 @@ import com.erikjarquin.ventas.model.dto.ResetPassword.ResetPasswordRequest;
 import com.erikjarquin.ventas.model.entity.UserEntity;
 import com.erikjarquin.ventas.service.AuthService;
 
-@RestController
-@RequestMapping("/api/auth")
-//@CrossOrigin(origins = "http://localhost:4200")
+@RestController //
+@RequestMapping("/api/auth") //
 public class AuthController {
     private final AuthService service;
 
@@ -26,11 +24,13 @@ public class AuthController {
         this.service = service;
     }
 
+    //Login para el usuario
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request){
         return service.login(request);
     }
 
+    //Si la contraseña ha sido olvidada
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(@RequestBody ForgotPasswordRequest req){
         service.forgotPassword(req.getEmail());
@@ -38,6 +38,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    //Resetear la contraseña
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest req){
         service.resetPassword(req.getToken(), req.getNewPassword());
@@ -45,6 +46,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    //Cambiar contraseña
     @PostMapping("/change-password")
     public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest req, Authentication auth){
         UserEntity user = (UserEntity) auth.getPrincipal();
@@ -52,16 +54,5 @@ public class AuthController {
         service.changePassword(user.getEmail(), req);
 
         return ResponseEntity.ok().build();
-    }
-
-    //Prueba de permisos
-    @GetMapping("/me/authorities")
-    public Object authorities(Authentication auth){
-
-        if(auth == null){
-            return "NO AUTHENTICATED";
-        }
-
-        return auth.getAuthorities();
     }
 }
