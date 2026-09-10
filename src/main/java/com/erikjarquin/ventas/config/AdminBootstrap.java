@@ -10,8 +10,8 @@ import com.erikjarquin.ventas.model.entity.UserEntity;
 import com.erikjarquin.ventas.repository.RoleRepository;
 import com.erikjarquin.ventas.repository.UserRepository;
 
-@Component
-@Order(2)
+@Component //
+@Order(2) //
 public class AdminBootstrap implements CommandLineRunner {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -25,18 +25,14 @@ public class AdminBootstrap implements CommandLineRunner {
         this.roleRepository=roleRepository;
     }
 
-    //Se crear el primer usuario
+    //Se crea el primer usuario
     @Override
     public void run(String... args){
         String adminEmail = "18jarquinsanchezerik1a@gmail.com";
-        //findByEmail
-        //isPresent
         boolean exists = userRepository.findByEmail(adminEmail).isPresent();
 
-        //exists
+        
         if(!exists){
-            //orElseThrow
-            //RuntimeException
             RoleEntity adminRole = roleRepository.findByName("ADMIN").orElseThrow(() ->
                 new RuntimeException("Rol ADMIN no encontrado"));
 

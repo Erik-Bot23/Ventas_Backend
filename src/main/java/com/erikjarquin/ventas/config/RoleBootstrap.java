@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.erikjarquin.ventas.model.entity.RoleEntity;
 import com.erikjarquin.ventas.repository.RoleRepository;
 
+//Crear los roles
 @Component
 @Order(1)
 public class RoleBootstrap  implements CommandLineRunner {

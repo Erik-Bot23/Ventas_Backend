@@ -16,6 +16,7 @@ import com.erikjarquin.ventas.model.enums.PermissionName;
 import com.erikjarquin.ventas.repository.PermissionRepository;
 import com.erikjarquin.ventas.repository.RoleRepository;
 
+//Asginar los permisos a los primeros roles
 @Component
 @Order(4)
 @Transactional

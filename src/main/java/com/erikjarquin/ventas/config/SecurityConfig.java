@@ -25,6 +25,7 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
+    //Se encripta la contraseña
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

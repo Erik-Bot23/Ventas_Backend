@@ -14,10 +14,6 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
     private static final String SECRET_KEY = "1234567890123456789012345678901234567890123456789012345678901234";
-    /*private Key getSigningKey(){
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-    }
-    */
 
     public String generateToken(UserEntity user){
         return Jwts.builder().setSubject(user.getEmail())
@@ -30,7 +26,7 @@ public class JwtUtil {
     }
 
     private Claims getClaims(String token){
-        return Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes()) //.setSignningKey(getSigningKey())
+        return Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes()) 
                 .build().parseClaimsJws(token).getBody();
     }
 

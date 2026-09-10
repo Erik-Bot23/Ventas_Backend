@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.erikjarquin.ventas.model.entity.PermissionEntity;
 import com.erikjarquin.ventas.model.entity.UserEntity;
 
+//Mostrar los roles con permisos
 @Component
 public class SecurityAuthorityMapper {
     public List<GrantedAuthority> mapAuthorities(UserEntity user){

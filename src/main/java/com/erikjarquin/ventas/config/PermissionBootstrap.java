@@ -8,6 +8,7 @@ import com.erikjarquin.ventas.model.entity.PermissionEntity;
 import com.erikjarquin.ventas.model.enums.PermissionName;
 import com.erikjarquin.ventas.repository.PermissionRepository;
 
+//Crear los permisos
 @Component
 @Order(3)
 public class PermissionBootstrap implements CommandLineRunner {
@@ -18,6 +19,7 @@ public class PermissionBootstrap implements CommandLineRunner {
             this.permissionRepository=permissionRepository;
         }
     
+    //
     @Override
     public void run(String...args){
         for(PermissionName permissionName : PermissionName.values()){
@@ -26,7 +28,7 @@ public class PermissionBootstrap implements CommandLineRunner {
             
                 permissionRepository.save(permission);
 
-                System.out.println("Permiso creado" + permissionName);
+                System.out.println("Permiso creado: " + permissionName);
             }
         }
     }

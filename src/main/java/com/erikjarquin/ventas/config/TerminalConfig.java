@@ -7,7 +7,6 @@ import lombok.Data;
 
 @Data
 @Component
-//@Configuration
 @ConfigurationProperties(prefix = "payment.terminal")
 public class TerminalConfig {
     private String type; //"PHYSICAL", "SIMULATED"
